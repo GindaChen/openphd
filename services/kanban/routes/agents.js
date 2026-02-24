@@ -448,7 +448,10 @@ export default function agentRoutes(app) {
             if (!message) return res.status(400).json({ error: 'No message provided' })
 
             const apiKey = req.headers['x-llm-api-key'] || process.env.ANTHROPIC_API_KEY || ENV_LLM_API_KEY
-            if (!apiKey) return res.status(400).json({ error: 'No API key configured. Set ANTHROPIC_API_KEY.' })
+            const provider = req.headers['x-llm-provider'] || 'anthropic'
+            const modelId = req.headers['x-llm-model'] || ENV_LLM_MODEL || 'claude-sonnet-4-6'
+            const baseUrl = req.headers['x-llm-base-url'] || ENV_LLM_BASE_URL || undefined
+            if (!apiKey) return res.status(400).json({ error: 'No API key configured. Set your API key in Settings.' })
 
             const sessionId = sid || crypto.randomUUID()
 
@@ -464,7 +467,7 @@ export default function agentRoutes(app) {
             }
 
             try {
-                const session = getOrCreateSession(sessionId, { apiKey })
+                const session = getOrCreateSession(sessionId, { apiKey, provider, modelId, baseUrl })
 
                 send('session', { sessionId })
 

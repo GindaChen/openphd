@@ -20,8 +20,14 @@ const sessions = new Map()
 export function getOrCreateSession(sessionId, config = {}) {
     if (sessions.has(sessionId)) {
         const session = sessions.get(sessionId)
-        session.lastAccess = Date.now()
-        return session
+        // Recreate if LLM config changed (user updated settings)
+        const configKey = `${config.provider || ''}:${config.modelId || ''}:${config.apiKey || ''}`
+        if (session._configKey && session._configKey !== configKey) {
+            destroySession(sessionId)
+        } else {
+            session.lastAccess = Date.now()
+            return session
+        }
     }
 
     const mailboxBase = path.join(os.tmpdir(), 'agent-sessions', sessionId)
@@ -36,6 +42,7 @@ export function getOrCreateSession(sessionId, config = {}) {
         sessionId,
         agent,
         mailboxBase,
+        _configKey: `${config.provider || ''}:${config.modelId || ''}:${config.apiKey || ''}`,
         createdAt: Date.now(),
         lastAccess: Date.now(),
     }

@@ -6026,6 +6026,21 @@ select.onboarding-input {
     color: var(--text-primary, #fff);
 }
 
+.onboarding-browser-item.active {
+    background: color-mix(in srgb, var(--accent, #667eea) 12%, var(--bg, #111));
+    color: var(--text-primary, #fff);
+    border-left: 3px solid var(--accent, #667eea);
+    font-weight: 500;
+}
+
+.onboarding-browser-hint {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+    text-align: center;
+    padding: 4px 0 0;
+    font-style: italic;
+}
+
 .onboarding-connect-card {
     padding: 16px;
     background: var(--bg, #111);

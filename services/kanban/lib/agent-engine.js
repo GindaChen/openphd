@@ -37,7 +37,44 @@ export function loadSoul(name, vars = {}) {
 // Backward compat alias
 export const loadPrompt = (name) => loadSoul(name)
 
-// ── Factory Functions ──
+/**
+ * Infer the streaming API type from the provider name.
+ * Must match a registered pi-ai API provider name.
+ */
+function inferApi(provider) {
+    if (provider === 'anthropic') return 'anthropic-messages'
+    if (provider === 'google') return 'google-generative-ai'
+    if (provider === 'google-vertex') return 'google-vertex'
+    if (provider === 'amazon-bedrock') return 'bedrock-converse-stream'
+    // OpenAI-compatible providers (openai, openrouter, kimi, deepseek, groq, etc.)
+    return 'openai-completions'
+}
+
+/**
+ * Resolve a model object: try the pi-ai registry first, fall back to constructing one.
+ */
+function resolveModel(provider, modelId, baseUrl) {
+    // Try registry lookup
+    const registered = getModel(provider, modelId)
+    if (registered) {
+        // Override baseUrl if provided
+        return baseUrl ? { ...registered, baseUrl } : registered
+    }
+
+    // Construct a minimal model object for unregistered models
+    return {
+        id: modelId,
+        name: modelId,
+        api: inferApi(provider),
+        provider,
+        baseUrl: baseUrl || '',
+        reasoning: false,
+        input: ['text'],
+        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+        contextWindow: 128000,
+        maxTokens: 16384,
+    }
+}
 
 /**
  * Create the Project Master Agent — always-on, top-level orchestrator.
@@ -47,13 +84,14 @@ export function createProjectMasterAgent(config = {}) {
         provider = 'anthropic',
         modelId = 'claude-sonnet-4-6',
         apiKey,
+        baseUrl,
         mailboxBase,
         agentId = 'master',
         systemPrompt,
         dataDir = DEFAULT_DATA_DIR,
     } = config
 
-    const model = getModel(provider, modelId)
+    const model = resolveModel(provider, modelId, baseUrl)
     const tools = createMasterTools({ mailboxBase, dataDir })
 
     const soul = systemPrompt || loadSoul('project-master', { agentId })

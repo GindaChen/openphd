@@ -14,6 +14,7 @@ function buildHeaders(opts = {}) {
     if (settings.llmApiKey) headers['X-LLM-API-Key'] = settings.llmApiKey
     if (settings.llmModel) headers['X-LLM-Model'] = settings.llmModel
     if (settings.llmBaseUrl) headers['X-LLM-Base-URL'] = settings.llmBaseUrl
+    if (settings.llmProvider) headers['X-LLM-Provider'] = settings.llmProvider
     if (settings.projectRoot) headers['X-Project-Root'] = settings.projectRoot
     return headers
 }
