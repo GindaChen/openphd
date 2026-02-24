@@ -137,6 +137,44 @@ export function loadHistory(agentId, baseDir = DEFAULT_AGENTS_BASE) {
 }
 
 /**
+ * Save an agent's soul document (markdown).
+ * @param {string} agentId
+ * @param {string} content — markdown soul content
+ * @param {string} [baseDir]
+ */
+export function saveSoul(agentId, content, baseDir = DEFAULT_AGENTS_BASE) {
+    const soulPath = path.join(baseDir, agentId, 'soul.md')
+    fs.writeFileSync(soulPath, content, 'utf-8')
+}
+
+/**
+ * Load an agent's soul document (markdown).
+ * @param {string} agentId
+ * @param {string} [baseDir]
+ * @returns {string|null}
+ */
+export function loadSoul(agentId, baseDir = DEFAULT_AGENTS_BASE) {
+    const soulPath = path.join(baseDir, agentId, 'soul.md')
+    try { return fs.readFileSync(soulPath, 'utf-8') } catch { return null }
+}
+
+/**
+ * List available soul templates from lib/souls/.
+ * @returns {Array<{ name: string, content: string }>}
+ */
+export function listSoulTemplates() {
+    const soulsDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), 'souls')
+    if (!fs.existsSync(soulsDir)) return []
+    return fs.readdirSync(soulsDir)
+        .filter(f => f.endsWith('.md'))
+        .map(f => ({
+            name: f.replace('.md', ''),
+            filename: f,
+            content: fs.readFileSync(path.join(soulsDir, f), 'utf-8'),
+        }))
+}
+
+/**
  * Delete an agent directory.
  * @param {string} agentId
  * @param {string} [baseDir]

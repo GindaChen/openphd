@@ -39,16 +39,53 @@ function AgentRow({ agent, isOpen, onToggle, indent = 0 }) {
 
 function AgentChatBox({ agent, onClose }) {
     const [messages, setMessages] = useState([])
+    const [historyLoaded, setHistoryLoaded] = useState(false)
+
+    // Load persisted chat history on mount
+    useEffect(() => {
+        let cancelled = false
+        apiFetch(`/agents/detail/${agent.agentId}/history`)
+            .then(history => {
+                if (cancelled || !Array.isArray(history)) return
+                setMessages(history.map(m => ({
+                    role: m.role,
+                    content: m.content,
+                    ts: m.timestamp,
+                    thinking: m.thinking || null,
+                    toolCalls: m.toolCalls || null,
+                })))
+                setHistoryLoaded(true)
+            })
+            .catch(() => setHistoryLoaded(true))
+        return () => { cancelled = true }
+    }, [agent.agentId])
     const [input, setInput] = useState('')
     const [sending, setSending] = useState(false)
     const [streamingContent, setStreamingContent] = useState('')
     const [streamingThinking, setStreamingThinking] = useState('')
     const [streamingTools, setStreamingTools] = useState([])
     const chatEndRef = useRef(null)
+    const messagesRef = useRef(null)
     const inputRef = useRef(null)
+    const userScrolledUp = useRef(false)
 
+    // Track whether user has scrolled away from bottom
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        const el = messagesRef.current
+        if (!el) return
+        const onScroll = () => {
+            const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+            userScrolledUp.current = distFromBottom > 80
+        }
+        el.addEventListener('scroll', onScroll)
+        return () => el.removeEventListener('scroll', onScroll)
+    }, [])
+
+    // Auto-scroll only if user is near the bottom
+    useEffect(() => {
+        if (!userScrolledUp.current) {
+            chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }
     }, [messages.length, streamingContent])
 
     const handleSend = useCallback(async () => {
@@ -142,7 +179,7 @@ function AgentChatBox({ agent, onClose }) {
                 <button className="ag-box-close" onClick={onClose} title="Close">×</button>
             </div>
 
-            <div className="ag-box-messages">
+            <div className="ag-box-messages" ref={messagesRef}>
                 {messages.length === 0 && !streamingContent && !streamingThinking && (
                     <div className="ag-box-welcome">Chat with <strong>{agent.displayName}</strong></div>
                 )}
@@ -151,8 +188,14 @@ function AgentChatBox({ agent, onClose }) {
                     <div key={i} className={`ag-msg ag-msg--${msg.role}`}>
                         <span className="ag-msg-avatar">{msg.role === 'user' ? '👤' : '🤖'}</span>
                         <div className="ag-msg-body">
+                            {msg.thinking && (
+                                <details className="kb-ask-thinking">
+                                    <summary>💭 Thinking</summary>
+                                    <div className="kb-ask-thinking-text">{msg.thinking}</div>
+                                </details>
+                            )}
                             {msg.toolCalls?.map((tc, j) => (
-                                <ToolChip key={j} tool={tc.tool} args={tc.args} result={tc.result} />
+                                <ToolChip key={j} tool={tc.tool} args={tc.args} result={tc.result && typeof tc.result === 'string' ? { output: tc.result } : tc.result} />
                             ))}
                             <div className="ag-msg-text" dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />
                         </div>

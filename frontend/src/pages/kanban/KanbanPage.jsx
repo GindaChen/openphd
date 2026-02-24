@@ -10,6 +10,7 @@ import MasterChat from './components/chat/MasterChat'
 import ContextDashboard from './components/home/ContextDashboard'
 import ProjectSidebar from './components/sidebar/ProjectSidebar'
 import AgentListView from './components/agents/AgentListView'
+import SoulsPage from './components/souls/SoulsPage'
 import SettingsPanel from './components/settings/SettingsPanel'
 import SyncDialog from './components/settings/SyncDialog'
 import CreateIssueDialog from './components/palette/CreateIssueDialog'
@@ -48,7 +49,12 @@ function HomeView({ onToggle }) {
 
 function KanbanInner() {
     const [selectedIssue, setSelectedIssue] = useState(null)
-    const [askOpen, setAskOpen] = useState(() => loadSettings().askPanelOpen)
+    const [askOpen, setAskOpen] = useState(() => {
+        const s = loadSettings()
+        // Apply saved font size on mount
+        if (s.fontSize) document.documentElement.style.setProperty('--font-size', `${s.fontSize}px`)
+        return s.askPanelOpen
+    })
     const [currentProject, setCurrentProject] = useState('default')
     const [currentView, setCurrentView] = useState(() => {
         const saved = loadSettings().defaultView
@@ -286,6 +292,10 @@ function KanbanInner() {
     }
 
     const handleSettingsChange = (newSettings) => {
+        // Apply font size
+        if (newSettings.fontSize) {
+            document.documentElement.style.setProperty('--font-size', `${newSettings.fontSize}px`)
+        }
         // Refresh sync status when settings change
         apiFetch('/sync/status').then(setSyncStatus).catch(() => { })
         // Reload board (project root may have changed)
@@ -324,6 +334,9 @@ function KanbanInner() {
                 ) : activeNav === 'agents' ? (
                     /* ── Agents View ── */
                     <AgentListView />
+                ) : activeNav === 'souls' ? (
+                    /* ── Souls & Tools View ── */
+                    <SoulsPage />
                 ) : (
                     /* ── Kanban View: Board with topbar ── */
                     <>

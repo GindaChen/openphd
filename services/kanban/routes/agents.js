@@ -11,7 +11,7 @@ import { getOrCreateSession, listSessions, destroySession } from '../lib/agent-s
 import {
     readInbox, readOutbox, loadRegistry, getRegistrySnapshot, getStatus as getAgentStatus,
 } from '../lib/agent-mailbox.js'
-import { listAgents as listPersistedAgents, loadAgent as loadPersistedAgent, createAgent as createPersistedAgent, getAgentsBase } from '../lib/agent-store.js'
+import { listAgents as listPersistedAgents, loadAgent as loadPersistedAgent, createAgent as createPersistedAgent, getAgentsBase, loadHistory as loadAgentHistory, saveHistory as saveAgentHistory, saveSoul, loadSoul, listSoulTemplates } from '../lib/agent-store.js'
 import { generateAgentId } from '../lib/agent-id.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -310,6 +310,85 @@ export default function agentRoutes(app) {
             res.json(agent)
         })
 
+        // GET /agents/detail/:id/history — agent chat history
+        app.get('/agents/detail/:id/history', (req, res) => {
+            const root = req.headers['x-project-root']
+            const base = getAgentsBase(root)
+            const history = loadAgentHistory(req.params.id, base)
+            res.json(history)
+        })
+
+        // GET /agents/detail/:id/soul — agent soul document
+        app.get('/agents/detail/:id/soul', (req, res) => {
+            const root = req.headers['x-project-root']
+            const base = getAgentsBase(root)
+            const soul = loadSoul(req.params.id, base)
+            res.json({ agentId: req.params.id, soul: soul || '' })
+        })
+
+        // PUT /agents/detail/:id/soul — save agent soul document
+        app.put('/agents/detail/:id/soul', (req, res) => {
+            const root = req.headers['x-project-root']
+            const base = getAgentsBase(root)
+            const { soul } = req.body || {}
+            if (typeof soul !== 'string') return res.status(400).json({ error: 'soul (string) required' })
+            saveSoul(req.params.id, soul, base)
+            res.json({ status: 'ok', agentId: req.params.id })
+        })
+
+        // GET /agents/soul-templates — list available soul templates
+        app.get('/agents/soul-templates', (_req, res) => {
+            const templates = listSoulTemplates()
+            res.json(templates)
+        })
+
+        // POST /agents/detail/:id/soul/fork — fork a soul template for an agent
+        app.post('/agents/detail/:id/soul/fork', (req, res) => {
+            const root = req.headers['x-project-root']
+            const base = getAgentsBase(root)
+            const { templateName } = req.body || {}
+            const templates = listSoulTemplates()
+            const tpl = templates.find(t => t.name === templateName)
+            if (!tpl) return res.status(404).json({ error: `Template '${templateName}' not found` })
+
+            // Personalize the template with agent info
+            const agent = loadPersistedAgent(req.params.id, base)
+            let soul = tpl.content
+            if (agent) {
+                soul = soul.replace(/\{\{agentId\}\}/g, agent.agentId || req.params.id)
+                soul = soul.replace(/\{\{displayName\}\}/g, agent.displayName || agent.agentId)
+                soul = soul.replace(/\{\{workspace\}\}/g, agent.workspace || '(none)')
+                soul = soul.replace(/\{\{model\}\}/g, agent.model || 'unknown')
+            }
+            saveSoul(req.params.id, soul, base)
+            res.json({ status: 'ok', agentId: req.params.id, template: templateName })
+        })
+
+        // GET /agents/tools — list available tool categories and tools
+        app.get('/agents/tools', (_req, res) => {
+            const toolsDir = path.join(__dirname, '..', 'lib', 'tools')
+            const categories = []
+            try {
+                const entries = fs.readdirSync(toolsDir, { withFileTypes: true })
+                for (const entry of entries) {
+                    if (entry.isDirectory()) {
+                        const catDir = path.join(toolsDir, entry.name)
+                        const tools = fs.readdirSync(catDir)
+                            .filter(f => f.endsWith('.js'))
+                            .map(f => f.replace('.js', ''))
+                        categories.push({ category: entry.name, tools })
+                    }
+                }
+            } catch { /* ignore */ }
+            // Also include top-level tools (AGENT_LLM_TOOLS)
+            const agentTools = AGENT_LLM_TOOLS.map(t => ({
+                name: t.function.name,
+                description: t.function.description,
+                parameters: t.function.parameters,
+            }))
+            res.json({ categories, agentTools })
+        })
+
         // POST /agents/create — create a new persistent agent (auto-named)
         app.post('/agents/create', (req, res) => {
             try {
@@ -535,6 +614,8 @@ export default function agentRoutes(app) {
 
             let closed = false
             let lastAssistantText = ''
+            let lastThinkingText = ''
+            let toolCallResults = []   // { tool, args, result }
             let userMessage = message
             res.on('close', () => {
                 closed = true
@@ -581,6 +662,7 @@ export default function agentRoutes(app) {
                             break
                         case 'tool_execution_start':
                             console.log(`🔧 ${tag} tool_start: ${event.toolName}(${JSON.stringify(event.args || {}).slice(0, 120)})`)
+                            toolCallResults.push({ tool: event.toolName, args: event.args, result: null })
                             send('tool_start', {
                                 toolName: event.toolName,
                                 args: event.args,
@@ -590,6 +672,8 @@ export default function agentRoutes(app) {
                             {
                                 const resultPreview = event.result?.content?.[0]?.text || ''
                                 console.log(`✅ ${tag} tool_end: ${event.toolName} → ${resultPreview.slice(0, 100)}${resultPreview.length > 100 ? '…' : ''}`)
+                                const tc = toolCallResults.findLast(t => t.tool === event.toolName && !t.result)
+                                if (tc) tc.result = resultPreview
                                 send('tool_end', {
                                     toolName: event.toolName,
                                     result: resultPreview,
@@ -607,10 +691,12 @@ export default function agentRoutes(app) {
                                 switch (ame.type) {
                                     case 'thinking_start':
                                         console.log(`🧠 ${tag} thinking...`)
+                                        lastThinkingText = ''
                                         send('thinking_start', {})
                                         break
                                     case 'thinking_delta':
                                         if (ame.delta) {
+                                            lastThinkingText += ame.delta
                                             send('thinking_delta', { text: ame.delta })
                                         }
                                         break
@@ -679,6 +765,28 @@ export default function agentRoutes(app) {
                 unsub?.()
 
                 console.log(`✔️  ${tag} prompt complete, closing stream`)
+
+                // Save to per-agent history (with thinking + tool calls)
+                if (session.agentId) {
+                    try {
+                        const agentsBase = getAgentsBase(req.headers['x-project-root'])
+                        const history = loadAgentHistory(session.agentId, agentsBase)
+                        history.push({ role: 'user', content: userMessage, timestamp: new Date().toISOString() })
+                        const assistantEntry = {
+                            role: 'assistant',
+                            content: lastAssistantText || '',
+                            timestamp: new Date().toISOString(),
+                        }
+                        if (lastThinkingText) assistantEntry.thinking = lastThinkingText
+                        if (toolCallResults.length > 0) assistantEntry.toolCalls = toolCallResults
+                        history.push(assistantEntry)
+                        if (history.length > 200) history.splice(0, history.length - 200)
+                        saveAgentHistory(session.agentId, history, agentsBase)
+                    } catch (err) {
+                        console.error(`⚠️  Failed to save agent history: ${err.message}`)
+                    }
+                }
+
                 send('done', { sessionId })
                 res.end()
             } catch (err) {

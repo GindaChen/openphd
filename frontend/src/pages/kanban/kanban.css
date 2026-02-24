@@ -9,6 +9,7 @@
     display: flex;
     height: 100vh;
     overflow: hidden;
+    font-size: var(--font-size, 14px);
 }
 
 /* ========================================
@@ -259,8 +260,8 @@
     left: calc(100% + 8px);
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(20, 20, 35, 0.95);
-    color: var(--text-primary, #eee);
+    background: var(--tooltip-bg, #333);
+    color: var(--tooltip-text, #fff);
     font-size: 11px;
     font-weight: 600;
     padding: 4px 10px;
@@ -271,8 +272,8 @@
     transition: opacity 0.15s ease, transform 0.15s ease;
     transform: translateY(-50%) translateX(-4px);
     z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--tooltip-border, rgba(0, 0, 0, 0.1));
 }
 
 .kb-sidebar-nav-item[data-tooltip]:hover::after {
@@ -7270,4 +7271,1003 @@ select.onboarding-input {
 .ag-box-send:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* ========================================
+   Agent Soul Panel — Center Column
+   ======================================== */
+
+.ag-view-center {
+    flex-shrink: 0;
+    overflow: hidden;
+    border-right: 1px solid var(--border, #333);
+    display: flex;
+    flex-direction: column;
+}
+
+.ag-soul-panel-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ag-soul-panel-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+}
+
+.ag-soul-panel-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary, #aaa);
+}
+
+.ag-soul-panel-collapse-btn {
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary, #666);
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+}
+
+.ag-soul-panel-collapse-btn:hover {
+    background: var(--bg-hover, #222);
+    color: var(--text-primary, #fff);
+}
+
+.ag-soul-expand-btn {
+    width: 28px;
+    flex-shrink: 0;
+    border: none;
+    border-right: 1px solid var(--border, #333);
+    background: var(--bg-card, #1a1a2e);
+    color: var(--text-tertiary, #666);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    writing-mode: vertical-rl;
+}
+
+.ag-soul-expand-btn:hover {
+    background: var(--bg-hover, #222);
+    color: var(--text-primary, #fff);
+}
+
+/* ── Soul Panel Component ── */
+
+.soul-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.soul-panel-header {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+}
+
+.soul-panel-agent-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.soul-panel-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+}
+
+.soul-panel-tab {
+    flex: 1;
+    padding: 7px 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary, #666);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--font);
+    font-weight: 600;
+    transition: all 0.15s;
+    border-bottom: 2px solid transparent;
+}
+
+.soul-panel-tab:hover {
+    color: var(--text-secondary, #aaa);
+    background: var(--bg-hover, #222);
+}
+
+.soul-panel-tab--active {
+    color: var(--accent, #667eea);
+    border-bottom-color: var(--accent, #667eea);
+}
+
+.soul-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.soul-panel-loading {
+    font-size: 12px;
+    color: var(--text-tertiary, #666);
+    padding: 20px 8px;
+    text-align: center;
+    font-style: italic;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.soul-panel-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+    color: var(--text-tertiary, #666);
+}
+
+.soul-panel-empty-icon {
+    font-size: 32px;
+    opacity: 0.4;
+}
+
+.soul-panel-empty-state p {
+    font-size: 12px;
+    margin: 0;
+}
+
+/* ── Soul Editor ── */
+
+.soul-editor {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.soul-editor-tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: var(--bg, #111);
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+
+.soul-editor-tab {
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary, #666);
+    cursor: pointer;
+    font-size: 10px;
+    font-family: var(--font);
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.1s;
+}
+
+.soul-editor-tab:hover {
+    background: var(--bg-hover, #222);
+    color: var(--text-secondary, #aaa);
+}
+
+.soul-editor-tab--active {
+    background: color-mix(in srgb, var(--accent, #667eea) 15%, transparent);
+    color: var(--accent, #667eea);
+}
+
+.soul-editor-save {
+    margin-left: auto;
+    padding: 3px 10px;
+    border: none;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    cursor: pointer;
+    font-size: 10px;
+    font-family: var(--font);
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.15s;
+}
+
+.soul-editor-save:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.soul-editor-save:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.soul-editor-preview {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.soul-editor-rendered {
+    font-size: 12px;
+    color: var(--text-secondary, #ccc);
+    line-height: 1.6;
+    padding: 4px;
+}
+
+.soul-editor-rendered h1,
+.soul-editor-rendered h2,
+.soul-editor-rendered h3 {
+    color: var(--text-primary, #fff);
+    margin: 12px 0 6px;
+}
+
+.soul-editor-rendered h1 {
+    font-size: 16px;
+}
+
+.soul-editor-rendered h2 {
+    font-size: 14px;
+    border-bottom: 1px solid var(--border, #333);
+    padding-bottom: 4px;
+}
+
+.soul-editor-rendered h3 {
+    font-size: 13px;
+}
+
+.soul-editor-rendered ul,
+.soul-editor-rendered ol {
+    padding-left: 18px;
+    margin: 4px 0;
+}
+
+.soul-editor-rendered li {
+    margin: 2px 0;
+}
+
+.soul-editor-rendered code {
+    font-size: 11px;
+    padding: 1px 4px;
+    background: rgba(102, 126, 234, 0.08);
+    border-radius: 3px;
+    font-family: var(--font-mono, monospace);
+    color: var(--accent-light, #8ba4ff);
+}
+
+.soul-editor-rendered pre {
+    background: var(--bg, #111);
+    border: 1px solid var(--border, #333);
+    border-radius: 6px;
+    padding: 8px 10px;
+    overflow-x: auto;
+    margin: 6px 0;
+}
+
+.soul-editor-rendered pre code {
+    background: none;
+    padding: 0;
+}
+
+.soul-editor-rendered strong {
+    color: var(--text-primary, #fff);
+}
+
+.soul-editor-rendered blockquote {
+    border-left: 3px solid var(--accent, #667eea);
+    margin: 6px 0;
+    padding: 4px 10px;
+    background: color-mix(in srgb, var(--accent, #667eea) 5%, transparent);
+    border-radius: 0 6px 6px 0;
+    color: var(--text-secondary, #aaa);
+    font-size: 11px;
+}
+
+.soul-editor-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 12px;
+    color: var(--text-tertiary, #666);
+    text-align: center;
+    gap: 4px;
+}
+
+.soul-editor-empty-icon {
+    font-size: 28px;
+    opacity: 0.4;
+}
+
+.soul-editor-empty p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.soul-editor-empty-hint {
+    font-size: 11px;
+    color: var(--text-tertiary, #555);
+}
+
+.soul-editor-textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 200px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    line-height: 1.6;
+    border: 1px solid var(--border, #333);
+    border-radius: 6px;
+    background: var(--bg-input, #181828);
+    color: var(--text-primary, #fff);
+    outline: none;
+    resize: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.soul-editor-textarea:focus {
+    border-color: var(--accent, #667eea);
+}
+
+.soul-editor-textarea::placeholder {
+    color: var(--text-tertiary, #555);
+}
+
+/* ── Soul Templates ── */
+
+.soul-templates {
+    margin: 8px 0;
+}
+
+.soul-templates-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.soul-templates-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.soul-templates-hint {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+}
+
+.soul-templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 4px;
+}
+
+.soul-template-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 6px;
+    border: 1px solid var(--border, #333);
+    border-radius: 8px;
+    background: var(--bg, #111);
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.15s;
+}
+
+.soul-template-card:hover {
+    border-color: var(--accent, #667eea);
+    background: color-mix(in srgb, var(--accent, #667eea) 5%, var(--bg, #111));
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.soul-template-card:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.soul-template-icon {
+    font-size: 20px;
+}
+
+.soul-template-name {
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.soul-template-lines {
+    font-size: 9px;
+    color: var(--text-tertiary, #555);
+}
+
+/* ── Tools Panel ── */
+
+.soul-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.soul-tools-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.soul-tools-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.soul-tools-count {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent, #667eea) 12%, transparent);
+    color: var(--accent, #667eea);
+    font-weight: 600;
+}
+
+.soul-tool-category {
+    border: 1px solid var(--border, #333);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.soul-tool-category-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 7px 10px;
+    border: none;
+    background: var(--bg, #111);
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.1s;
+}
+
+.soul-tool-category-header:hover {
+    background: var(--bg-hover, #222);
+    color: var(--text-primary, #fff);
+}
+
+.soul-tool-category-icon {
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.soul-tool-category-name {
+    flex: 1;
+    text-transform: capitalize;
+}
+
+.soul-tool-category-count {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--accent, #667eea) 10%, transparent);
+    color: var(--text-tertiary, #888);
+    font-weight: 600;
+}
+
+.soul-tool-category-arrow {
+    font-size: 10px;
+    color: var(--text-tertiary, #555);
+    flex-shrink: 0;
+}
+
+.soul-tool-category-desc {
+    padding: 4px 8px 8px;
+    background: var(--bg-card, #1a1a2e);
+    border-top: 1px solid var(--border, #333);
+}
+
+.soul-tool-desc-text {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+    padding: 2px 4px 6px;
+    font-style: italic;
+}
+
+.soul-tool-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 3px 4px;
+    font-size: 11px;
+}
+
+.soul-tool-item-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent, #667eea);
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+.soul-tool-item-name {
+    color: var(--text-secondary, #ccc);
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+}
+
+.soul-tool-item-desc {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+    margin-top: 1px;
+    line-height: 1.4;
+}
+
+/* ── Agent Info Card ── */
+
+.soul-info-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px;
+}
+
+.soul-info-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.soul-info-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 70px;
+    flex-shrink: 0;
+}
+
+.soul-info-value {
+    font-size: 12px;
+    color: var(--text-secondary, #ccc);
+}
+
+.soul-info-mono {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+}
+
+.soul-info-badge {
+    font-size: 10px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent, #667eea) 12%, transparent);
+    color: var(--accent, #667eea);
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* ========================================
+   Souls Page — Global View
+   ======================================== */
+
+.souls-page {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+.souls-page-left {
+    width: 280px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border, #333);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.souls-page-left-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+}
+
+.souls-page-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    margin: 0;
+}
+
+.souls-page-section-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+}
+
+.souls-section-tab {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary, #666);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--font);
+    font-weight: 600;
+    transition: all 0.15s;
+    border-bottom: 2px solid transparent;
+}
+
+.souls-section-tab:hover {
+    color: var(--text-secondary, #aaa);
+    background: var(--bg-hover, #222);
+}
+
+.souls-section-tab--active {
+    color: var(--accent, #667eea);
+    border-bottom-color: var(--accent, #667eea);
+}
+
+.souls-page-loading {
+    font-size: 12px;
+    color: var(--text-tertiary, #666);
+    padding: 24px 14px;
+    text-align: center;
+    font-style: italic;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.souls-page-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+}
+
+.souls-page-empty {
+    font-size: 12px;
+    color: var(--text-tertiary, #666);
+    padding: 20px 8px;
+    text-align: center;
+    font-style: italic;
+}
+
+.souls-page-empty code {
+    font-size: 11px;
+    padding: 1px 4px;
+    background: rgba(102, 126, 234, 0.08);
+    border-radius: 3px;
+    font-family: var(--font-mono, monospace);
+}
+
+/* ── Soul Card (left panel list item) ── */
+
+.souls-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    border-radius: 6px;
+    font-family: var(--font);
+    text-align: left;
+    transition: all 0.12s;
+    margin-bottom: 2px;
+}
+
+.souls-card:hover {
+    background: var(--bg-hover, #222);
+    color: var(--text-primary, #fff);
+}
+
+.souls-card--selected {
+    background: color-mix(in srgb, var(--accent, #667eea) 10%, transparent);
+    border-color: color-mix(in srgb, var(--accent, #667eea) 25%, transparent);
+    color: var(--text-primary, #fff);
+}
+
+.souls-card-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.souls-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+.souls-card-name {
+    font-size: 12px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.souls-card-meta {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+}
+
+.souls-card-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--accent, #667eea) 15%, transparent);
+    color: var(--accent, #667eea);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── Right Panel (detail) ── */
+
+.souls-page-right {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.souls-detail {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.souls-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+}
+
+.souls-detail-icon {
+    font-size: 24px;
+}
+
+.souls-detail-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    margin: 0;
+}
+
+.souls-detail-meta {
+    font-size: 11px;
+    color: var(--text-tertiary, #666);
+}
+
+.souls-detail-fork {
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border, #333);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.souls-detail-fork-label {
+    font-size: 11px;
+    color: var(--text-tertiary, #666);
+    font-weight: 600;
+}
+
+.souls-detail-fork-btns {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.souls-detail-fork-btn {
+    padding: 3px 10px;
+    font-size: 10px;
+    font-family: var(--font);
+    font-weight: 600;
+    border: 1px solid var(--border, #333);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.souls-detail-fork-btn:hover {
+    border-color: var(--accent, #667eea);
+    color: var(--accent, #667eea);
+    background: color-mix(in srgb, var(--accent, #667eea) 8%, transparent);
+}
+
+.souls-detail-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 18px;
+}
+
+.souls-detail-rendered {
+    font-size: 13px;
+    color: var(--text-secondary, #ccc);
+    line-height: 1.7;
+}
+
+.souls-detail-rendered h1,
+.souls-detail-rendered h2,
+.souls-detail-rendered h3 {
+    color: var(--text-primary, #fff);
+    margin: 14px 0 8px;
+}
+
+.souls-detail-rendered h1 {
+    font-size: 18px;
+}
+
+.souls-detail-rendered h2 {
+    font-size: 15px;
+    border-bottom: 1px solid var(--border, #333);
+    padding-bottom: 4px;
+}
+
+.souls-detail-rendered h3 {
+    font-size: 14px;
+}
+
+.souls-detail-rendered ul,
+.souls-detail-rendered ol {
+    padding-left: 20px;
+    margin: 6px 0;
+}
+
+.souls-detail-rendered li {
+    margin: 3px 0;
+}
+
+.souls-detail-rendered code {
+    font-size: 12px;
+    padding: 1px 5px;
+    background: rgba(102, 126, 234, 0.08);
+    border-radius: 3px;
+    font-family: var(--font-mono, monospace);
+    color: var(--accent-light, #8ba4ff);
+}
+
+.souls-detail-rendered strong {
+    color: var(--text-primary, #fff);
+}
+
+.souls-detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+    color: var(--text-tertiary, #666);
+}
+
+.souls-detail-empty-icon {
+    font-size: 40px;
+    opacity: 0.3;
+}
+
+.souls-detail-empty p {
+    font-size: 13px;
+    margin: 0;
+}
+
+.souls-detail-empty-hint {
+    font-size: 11px;
+    color: var(--text-tertiary, #555);
+    max-width: 260px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ── Tools list in Souls page ── */
+
+.souls-tool-group {
+    margin-bottom: 6px;
+}
+
+.souls-tool-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    color: var(--text-secondary, #aaa);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.souls-tool-group-icon {
+    font-size: 14px;
+}
+
+.souls-tool-group-name {
+    flex: 1;
+    text-transform: capitalize;
+}
+
+.souls-tool-group-count {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--accent, #667eea) 10%, transparent);
+    color: var(--text-tertiary, #888);
+    font-weight: 600;
+}
+
+.souls-tool-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 3px 8px 3px 28px;
+    font-size: 11px;
+}
+
+.souls-tool-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent, #667eea);
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+.souls-tool-name {
+    color: var(--text-secondary, #ccc);
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+}
+
+.souls-tool-desc {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+    margin-top: 1px;
+    line-height: 1.4;
 }

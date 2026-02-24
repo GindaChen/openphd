@@ -25,6 +25,9 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
     --font: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --tooltip-bg: #FFFFFF;
+    --tooltip-text: #1A1A1A;
+    --tooltip-border: rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="dark"] {
@@ -47,6 +50,9 @@
     --success-bg: #1D2B1D;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --tooltip-bg: #2E2D29;
+    --tooltip-text: #E8E6E0;
+    --tooltip-border: rgba(255, 255, 255, 0.08);
 }
 
 * {

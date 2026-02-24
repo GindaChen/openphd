@@ -109,6 +109,13 @@ export default function ProjectSidebar({ currentProject, onSelectProject, active
                 >
                     <span className="kb-sidebar-nav-icon">🤖</span>
                 </button>
+                <button
+                    className={`kb-sidebar-nav-item ${activeNav === 'souls' ? 'kb-sidebar-nav-item--active' : ''}`}
+                    onClick={() => onNavChange('souls')}
+                    data-tooltip="Souls & Tools"
+                >
+                    <span className="kb-sidebar-nav-icon">🪶</span>
+                </button>
             </nav>
 
             {/* ── Bottom ── */}
