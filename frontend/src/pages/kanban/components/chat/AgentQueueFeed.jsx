@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { apiFetch } from '../../store/api'
+import { renderMarkdown } from '../../lib/markdown'
 
 const POLL_INTERVAL = 3000 // 3 seconds
 const DIRECTION_ICONS = { in: '📥', out: '📤' }
@@ -105,12 +106,15 @@ export default function AgentQueueFeed({ sessionId }) {
                             <span className="kb-queue-msg-agent">{msg.from || msg.agentId}</span>
                             <span className="kb-queue-msg-time">{formatTime(msg.timestamp)}</span>
                         </div>
-                        <div className="kb-queue-msg-content">
-                            {typeof msg.content === 'string'
-                                ? msg.content
-                                : JSON.stringify(msg.content, null, 2)
-                            }
-                        </div>
+                        <div className="kb-queue-msg-content"
+                            dangerouslySetInnerHTML={{
+                                __html: renderMarkdown(
+                                    typeof msg.content === 'string'
+                                        ? msg.content
+                                        : JSON.stringify(msg.content, null, 2)
+                                )
+                            }}
+                        />
                     </div>
                 ))}
 

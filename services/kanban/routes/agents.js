@@ -29,6 +29,23 @@ function getAgentDataDir(req) {
 function ensureAgentDirs(agentDir) {
     const memDir = path.join(agentDir, 'memory', 'shared')
     if (!fs.existsSync(memDir)) fs.mkdirSync(memDir, { recursive: true })
+    ensureMasterAgent(agentDir)
+}
+
+/** Seed a default master agent if none exists yet */
+function ensureMasterAgent(agentsBase) {
+    try {
+        const existing = listPersistedAgents(agentsBase)
+        if (existing.some(a => a.type === 'master')) return // already have one
+        const result = createPersistedAgent({
+            type: 'master',
+            provider: 'anthropic',
+            model: 'claude-sonnet-4-6',
+        }, agentsBase)
+        console.log(`🤖 [bootstrap] Seeded master agent: ${result.agentId}`)
+    } catch (err) {
+        console.error('⚠️  Failed to seed master agent:', err.message)
+    }
 }
 
 // Ensure default agent dirs exist

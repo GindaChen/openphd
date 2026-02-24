@@ -1,0 +1,11 @@
+{
+  "agentId": "2026-02-24-12-38-29-arch-mare",
+  "type": "master",
+  "displayName": "arch-mare",
+  "soul": null,
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "workspace": null,
+  "parentId": null,
+  "createdAt": "2026-02-24T20:38:29.793Z"
+}

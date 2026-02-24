@@ -70,7 +70,7 @@ function KanbanInner() {
     const { width: askWidth, handleMouseDown: askResizeDown } = useResizable({
         initialWidth: 400,
         minWidth: 300,
-        maxWidth: 700,
+        maxWidth: 1200,
         storageKey: 'kb-ask-panel-width',
     })
 

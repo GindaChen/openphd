@@ -28,6 +28,8 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     const [streamingTools, setStreamingTools] = useState([])
     const [activeTab, setActiveTab] = useState('chat')
     const [debugMode, setDebugMode] = useState(false)
+    const [chatTitle, setChatTitle] = useState(() => localStorage.getItem('kb-chat-title') || 'Main Chat')
+    const [editingTitle, setEditingTitle] = useState(false)
 
     // ── Refs ──
     const chatEndRef = useRef(null)
@@ -215,7 +217,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
             {!isOpen && (
                 <button className="kb-ask-toggle" onClick={onToggle}>
                     <span className="kb-ask-toggle-icon">✨</span>
-                    <span className="kb-ask-toggle-label">Ask</span>
+                    <span className="kb-ask-toggle-label">{chatTitle}</span>
                 </button>
             )}
 
@@ -224,7 +226,29 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                     <div className="kb-ask-header">
                         <div className="kb-ask-header-left">
                             <span className="kb-ask-header-icon">✨</span>
-                            <span className="kb-ask-header-title">Ask</span>
+                            {editingTitle ? (
+                                <input
+                                    className="kb-ask-header-title-input"
+                                    defaultValue={chatTitle}
+                                    autoFocus
+                                    onBlur={(e) => {
+                                        const v = e.target.value.trim() || 'Main Chat'
+                                        setChatTitle(v)
+                                        localStorage.setItem('kb-chat-title', v)
+                                        setEditingTitle(false)
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') e.target.blur()
+                                        if (e.key === 'Escape') { setEditingTitle(false) }
+                                    }}
+                                />
+                            ) : (
+                                <span
+                                    className="kb-ask-header-title"
+                                    onDoubleClick={() => setEditingTitle(true)}
+                                    title="Double-click to rename"
+                                >{chatTitle}</span>
+                            )}
 
                         </div>
                         <div className="kb-ask-header-tabs">
