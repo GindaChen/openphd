@@ -6,8 +6,7 @@ Before doing anything, run `/onboard` or read these files in order:
 
 1. `.agent/workflows/repo-overview.md` — architecture and structure
 2. `.agent/workflows/feature-dev.md` — how to ship changes
-3. `.agent/journey/final-reflection/02-execution-agent-soul.md` — who you are
-4. `.agent/journey/final-reflection/01-skills-learned.md` — patterns and gotchas
+3. `.agent/journey/final-reflection/` — patterns and gotchas and who you are
 
 ## Architecture
 
@@ -62,6 +61,10 @@ cd frontend && npx vite build
 | `GITHUB_TOKEN` | For sync | GitHub issue sync |
 | `GITHUB_REPO` | For sync | Target repo (`owner/repo`) |
 | `KANBAN_PORT` | Optional | API port (default: 3001) |
+
+## Rules
+
+- Unless explicitly spoken otherwise, do not use browser to validate your result or generate a walkthrough unless absolutely necessary.
 
 ## Memory
 
