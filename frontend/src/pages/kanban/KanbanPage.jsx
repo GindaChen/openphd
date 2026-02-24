@@ -12,10 +12,11 @@ import ProjectSidebar from './components/sidebar/ProjectSidebar'
 import SettingsPanel from './components/settings/SettingsPanel'
 import SyncDialog from './components/settings/SyncDialog'
 import CreateIssueDialog from './components/palette/CreateIssueDialog'
+import CommandPalette from './components/palette/CommandPalette'
 import OnboardingWizard from './components/onboarding/OnboardingWizard'
 import { useKeyboard } from './hooks/useKeyboard'
 import { useResizable } from './hooks/useResizable'
-import { useRegisterCommands } from '../../contexts/CommandContext'
+import { useRegisterCommands, useCommandPalette } from '../../contexts/CommandContext'
 import './kanban.css'
 
 /** Resizable Home View — dashboard (left) + chat (right) */
@@ -61,6 +62,7 @@ function KanbanInner() {
     const [syncDialog, setSyncDialog] = useState({ open: false, direction: null })
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
     const { state, actions } = useKanban()
+    const { isOpen: paletteOpen, close: closePalette } = useCommandPalette()
     const handleCloseDetail = useCallback(() => setSelectedIssue(null), [])
 
     useKeyboard({ selectedIssue, onCloseDetail: handleCloseDetail })
@@ -413,6 +415,8 @@ function KanbanInner() {
                 onClose={() => setSyncDialog({ open: false, direction: null })}
                 onSync={handleSync}
             />
+
+            <CommandPalette isOpen={paletteOpen} onClose={closePalette} />
         </div>
     )
 }
