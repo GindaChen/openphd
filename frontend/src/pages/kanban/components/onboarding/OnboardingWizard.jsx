@@ -16,6 +16,7 @@ export default function OnboardingWizard({ onComplete }) {
     const [browseDirs, setBrowseDirs] = useState([])
     const [browseParent, setBrowseParent] = useState('')
     const [showBrowser, setShowBrowser] = useState(false)
+    const [selectedDir, setSelectedDir] = useState(null)
     const [testingGh, setTestingGh] = useState(false)
     const [ghOk, setGhOk] = useState(null)
     const [testingAi, setTestingAi] = useState(false)
@@ -34,6 +35,7 @@ export default function OnboardingWizard({ onComplete }) {
                 setBrowsePath(data.current)
                 setBrowseParent(data.parent)
                 setBrowseDirs(data.dirs)
+                setSelectedDir(null)
             }
         } catch { /* ignore */ }
     }
@@ -174,16 +176,22 @@ export default function OnboardingWizard({ onComplete }) {
                                         </button>
                                     )}
                                     {browseDirs.map(d => (
-                                        <button key={d} className="onboarding-browser-item" onClick={() => handleBrowse(d)}>
+                                        <button
+                                            key={d}
+                                            className={`onboarding-browser-item ${selectedDir === d ? 'active' : ''}`}
+                                            onClick={() => { setSelectedDir(d); update('projectRoot', d) }}
+                                            onDoubleClick={() => handleBrowse(d)}
+                                        >
                                             📁 {d.split('/').pop()}
                                         </button>
                                     ))}
+                                    <div className="onboarding-browser-hint">Click to select · Double-click to open</div>
                                     <button
                                         className="onboarding-btn-secondary"
                                         style={{ marginTop: 8, width: '100%' }}
-                                        onClick={() => { update('projectRoot', browsePath); setShowBrowser(false) }}
+                                        onClick={() => { update('projectRoot', selectedDir || browsePath); setShowBrowser(false) }}
                                     >
-                                        ✓ Use this directory
+                                        ✓ Use {selectedDir ? selectedDir.split('/').pop() : 'this directory'}
                                     </button>
                                 </div>
                             )}

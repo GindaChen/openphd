@@ -448,7 +448,19 @@ export default function agentRoutes(app) {
             if (!message) return res.status(400).json({ error: 'No message provided' })
 
             const apiKey = req.headers['x-llm-api-key'] || process.env.ANTHROPIC_API_KEY || ENV_LLM_API_KEY
-            if (!apiKey) return res.status(400).json({ error: 'No API key configured. Set ANTHROPIC_API_KEY.' })
+            const provider = req.headers['x-llm-provider'] || 'anthropic'
+            const modelId = req.headers['x-llm-model'] || ENV_LLM_MODEL || 'claude-sonnet-4-6'
+            const baseUrl = req.headers['x-llm-base-url'] || ENV_LLM_BASE_URL || undefined
+
+            console.log('\n🗨️  [chat/stream] incoming request:')
+            console.log('   message:', JSON.stringify(message).slice(0, 100))
+            console.log('   provider:', provider)
+            console.log('   model:', modelId)
+            console.log('   apiKey:', apiKey ? `${apiKey.slice(0, 8)}...${apiKey.slice(-4)}` : '(none)')
+            console.log('   baseUrl:', baseUrl || '(default)')
+            console.log('   sessionId:', sid || '(new)')
+
+            if (!apiKey) return res.status(400).json({ error: 'No API key configured. Set your API key in Settings.' })
 
             const sessionId = sid || crypto.randomUUID()
 
@@ -464,7 +476,7 @@ export default function agentRoutes(app) {
             }
 
             try {
-                const session = getOrCreateSession(sessionId, { apiKey })
+                const session = getOrCreateSession(sessionId, { apiKey, provider, modelId, baseUrl })
 
                 send('session', { sessionId })
 
@@ -520,6 +532,8 @@ export default function agentRoutes(app) {
                 send('done', { sessionId })
                 res.end()
             } catch (err) {
+                console.error('❌ [chat/stream] error:', err.message)
+                console.error('   stack:', err.stack?.split('\n').slice(0, 3).join('\n   '))
                 send('error', { message: err.message })
                 res.end()
             }

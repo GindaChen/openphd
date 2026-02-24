@@ -1672,6 +1672,125 @@
     margin: 2px 0;
 }
 
+/* ── Markdown Headings in Chat ── */
+.kb-ask-msg-text h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 10px 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+}
+
+.kb-ask-msg-text h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 8px 0 4px;
+}
+
+.kb-ask-msg-text h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 6px 0 3px;
+}
+
+.kb-ask-msg-text h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 4px 0 2px;
+}
+
+/* ── Paragraphs in Chat ── */
+.kb-ask-msg-text p {
+    margin: 4px 0;
+}
+
+/* ── Tables in Chat ── */
+.kb-ask-msg-text table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 6px 0;
+    font-size: 11px;
+}
+
+.kb-ask-msg-text th,
+.kb-ask-msg-text td {
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+
+.kb-ask-msg-text th {
+    background: var(--bg-hover);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.kb-ask-msg-text td {
+    color: var(--text-secondary);
+}
+
+/* ── Code Blocks in Chat (from lib/markdown.js) ── */
+.kb-ask-msg-text pre.kb-md-codeblock {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin: 6px 0;
+    overflow-x: auto;
+    font-size: 11px;
+    line-height: 1.5;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+}
+
+.kb-ask-msg-text pre.kb-md-codeblock code {
+    background: transparent !important;
+    padding: 0 !important;
+    color: var(--text-secondary) !important;
+    font-size: inherit;
+}
+
+.kb-ask-msg-text code.kb-md-code {
+    font-size: 11px;
+    background: var(--bg-hover);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--accent);
+}
+
+/* ── Horizontal Rules in Chat ── */
+.kb-ask-msg-text hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0;
+}
+
+/* ── Task Lists in Chat ── */
+.kb-ask-msg-text .kb-md-task {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0;
+}
+
+.kb-ask-msg-text .kb-md-check {
+    color: var(--text-tertiary);
+    font-size: 11px;
+}
+
+.kb-ask-msg-text .kb-md-check--done {
+    color: #4ade80;
+}
+
+/* ── Ordered Lists in Chat ── */
+.kb-ask-msg-text ol {
+    margin: 4px 0;
+    padding-left: 20px;
+}
+
 /* ── Ask Panel — Header Tabs (Chat / Activity) ── */
 .kb-ask-header-tabs {
     display: flex;
@@ -6024,6 +6143,21 @@ select.onboarding-input {
 .onboarding-browser-item:hover {
     background: var(--bg-hover, #222);
     color: var(--text-primary, #fff);
+}
+
+.onboarding-browser-item.active {
+    background: color-mix(in srgb, var(--accent, #667eea) 12%, var(--bg, #111));
+    color: var(--text-primary, #fff);
+    border-left: 3px solid var(--accent, #667eea);
+    font-weight: 500;
+}
+
+.onboarding-browser-hint {
+    font-size: 10px;
+    color: var(--text-tertiary, #666);
+    text-align: center;
+    padding: 4px 0 0;
+    font-style: italic;
 }
 
 .onboarding-connect-card {
