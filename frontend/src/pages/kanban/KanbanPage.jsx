@@ -9,6 +9,7 @@ import IssueDetailPanel from './components/detail/IssueDetailPanel'
 import MasterChat from './components/chat/MasterChat'
 import ContextDashboard from './components/home/ContextDashboard'
 import ProjectSidebar from './components/sidebar/ProjectSidebar'
+import AgentListView from './components/agents/AgentListView'
 import SettingsPanel from './components/settings/SettingsPanel'
 import SyncDialog from './components/settings/SyncDialog'
 import CreateIssueDialog from './components/palette/CreateIssueDialog'
@@ -313,12 +314,16 @@ function KanbanInner() {
                 onSelectProject={(id) => { setCurrentProject(id); setActiveNav('kanban') }}
                 activeNav={activeNav}
                 onNavChange={(nav) => { setActiveNav(nav); if (nav === 'home') setSelectedIssue(null) }}
+                onOpenSettings={() => setSettingsOpen(true)}
             />
 
             <div className="kb-main-area">
                 {activeNav === 'home' ? (
                     /* ── Home View: Dashboard + Chat split (resizable) ── */
                     <HomeView onToggle={() => setActiveNav('kanban')} />
+                ) : activeNav === 'agents' ? (
+                    /* ── Agents View ── */
+                    <AgentListView />
                 ) : (
                     /* ── Kanban View: Board with topbar ── */
                     <>

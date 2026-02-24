@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import CreateProjectDialog from './CreateProjectDialog'
 import AgentPulse from '../agents/AgentPulse'
 
-export default function ProjectSidebar({ currentProject, onSelectProject, activeNav, onNavChange }) {
+export default function ProjectSidebar({ currentProject, onSelectProject, activeNav, onNavChange, onOpenSettings }) {
     const [projects, setProjects] = useState([
         { id: 'default', name: 'Research Board', emoji: '📐' },
         { id: 'whisper', name: 'Whisper ASR', emoji: '🎙️' },
@@ -102,14 +102,25 @@ export default function ProjectSidebar({ currentProject, onSelectProject, active
                 >
                     <span className="kb-sidebar-nav-icon">📋</span>
                 </button>
+                <button
+                    className={`kb-sidebar-nav-item ${activeNav === 'agents' ? 'kb-sidebar-nav-item--active' : ''}`}
+                    onClick={() => onNavChange('agents')}
+                    data-tooltip="Agents"
+                >
+                    <span className="kb-sidebar-nav-icon">🤖</span>
+                </button>
             </nav>
 
             {/* ── Bottom ── */}
             <div className="kb-sidebar-bottom">
                 <AgentPulse />
-                <a href="/" className="kb-sidebar-nav-item kb-sidebar-nav-item--subtle" data-tooltip="Back to app">
-                    <span className="kb-sidebar-nav-icon">↩</span>
-                </a>
+                <button
+                    className="kb-sidebar-nav-item kb-sidebar-nav-item--subtle"
+                    onClick={() => onOpenSettings?.()}
+                    data-tooltip="Settings"
+                >
+                    <span className="kb-sidebar-nav-icon">⚙</span>
+                </button>
             </div>
 
             {/* ── Create Project Dialog ── */}
