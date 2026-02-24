@@ -90,7 +90,7 @@ function AgentChatBox({ agent, onClose }) {
                             const data = JSON.parse(line.slice(6))
                             switch (eventType) {
                                 case 'thinking_start': setStreamingThinking(''); break
-                                case 'thinking': if (data.text) setStreamingThinking(prev => prev + data.text); break
+                                case 'thinking_delta': if (data.text) setStreamingThinking(prev => prev + data.text); break
                                 case 'content': if (data.text) { fullContent += data.text; setStreamingContent(fullContent) } break
                                 case 'tool_start':
                                     toolResults.push({ tool: data.toolName, args: data.args, result: null })

@@ -573,6 +573,7 @@ export default function agentRoutes(app) {
                 send('session', { sessionId, agentId: session.agentId })
 
                 const unsub = session.agent.subscribe(event => {
+                    console.log(`📄 ${tag} event: ${event.type}`, event);
                     switch (event.type) {
                         case 'agent_start':
                             console.log(`⚙️  ${tag} agent_start — processing`)
@@ -610,7 +611,7 @@ export default function agentRoutes(app) {
                                         break
                                     case 'thinking_delta':
                                         if (ame.delta) {
-                                            send('thinking', { text: ame.delta })
+                                            send('thinking_delta', { text: ame.delta })
                                         }
                                         break
                                     case 'thinking_end':

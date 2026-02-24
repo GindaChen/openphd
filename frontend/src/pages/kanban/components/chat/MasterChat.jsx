@@ -98,7 +98,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                 case 'thinking_start':
                                     setStreamingThinking('')
                                     break
-                                case 'thinking':
+                                case 'thinking_delta':
                                     // Streaming thinking delta from agent
                                     if (data.text) {
                                         setStreamingThinking(prev => prev + data.text)

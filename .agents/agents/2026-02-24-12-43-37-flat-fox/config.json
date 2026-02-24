@@ -1,0 +1,11 @@
+{
+  "agentId": "2026-02-24-12-43-37-flat-fox",
+  "type": "master",
+  "displayName": "flat-fox",
+  "soul": null,
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-6",
+  "workspace": null,
+  "parentId": null,
+  "createdAt": "2026-02-24T20:43:37.714Z"
+}
