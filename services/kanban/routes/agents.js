@@ -592,11 +592,13 @@ export default function agentRoutes(app) {
                                         send('thinking_start', {})
                                         break
                                     case 'thinking_delta':
-                                        // don't log each delta — too noisy
+                                        if (ame.delta) {
+                                            send('thinking', { text: ame.delta })
+                                        }
                                         break
                                     case 'thinking_end':
                                         console.log(`🧠 ${tag} thinking complete`)
-                                        send('thinking_end', {})
+                                        send('thinking_end', { content: ame.content || '' })
                                         break
                                     case 'text_start':
                                         break

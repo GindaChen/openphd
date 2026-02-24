@@ -24,6 +24,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     const [agentStatus, setAgentStatus] = useState(null)
     const [sending, setSending] = useState(false)
     const [streamingContent, setStreamingContent] = useState('')
+    const [streamingThinking, setStreamingThinking] = useState('')
     const [streamingTools, setStreamingTools] = useState([])
     const [activeTab, setActiveTab] = useState('chat')
     const [debugMode, setDebugMode] = useState(false)
@@ -48,6 +49,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     // ── SSE stream from pi-mono Master Agent ──
     const streamFromAgent = useCallback(async (text) => {
         setStreamingContent('')
+        setStreamingThinking('')
         setStreamingTools([])
 
         try {
@@ -92,10 +94,16 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                     lastDebugRef.current = data
                                     break
                                 case 'thinking_start':
-                                    setStreamingContent(prev => prev + '\n\n*thinking…*\n\n')
+                                    setStreamingThinking('')
+                                    break
+                                case 'thinking':
+                                    // Streaming thinking delta from agent
+                                    if (data.text) {
+                                        setStreamingThinking(prev => prev + data.text)
+                                    }
                                     break
                                 case 'thinking_end':
-                                    // Clear thinking indicator — real text follows
+                                    // Keep final thinking text visible until response starts
                                     break
                                 case 'content':
                                     // Streaming text delta from agent
@@ -135,12 +143,14 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
             actions.addMasterChat('assistant', fullContent || 'Done!', toolCalls, debugInfo)
             lastDebugRef.current = null
             setStreamingContent('')
+            setStreamingThinking('')
             setStreamingTools([])
             await actions.loadBoard()
         } catch (err) {
             actions.addMasterChat('assistant', `❌ Agent error: ${err.message}`)
             lastDebugRef.current = null
             setStreamingContent('')
+            setStreamingThinking('')
             setStreamingTools([])
         }
     }, [actions])
@@ -283,14 +293,22 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                 ))}
 
                                 {/* Streaming in-progress */}
-                                {(streamingContent || streamingTools.length > 0) && (
+                                {(streamingContent || streamingThinking || streamingTools.length > 0) && (
                                     <div className="kb-ask-msg kb-ask-msg--assistant kb-ask-msg--streaming">
                                         <div className="kb-ask-msg-avatar">✨</div>
                                         <div className="kb-ask-msg-body">
                                             <div className="kb-ask-msg-meta">
                                                 <span>Agent</span>
-                                                <span className="kb-ask-msg-time kb-ask-streaming-indicator">● streaming</span>
+                                                <span className="kb-ask-msg-time kb-ask-streaming-indicator">
+                                                    ● {streamingThinking && !streamingContent ? 'thinking' : 'streaming'}
+                                                </span>
                                             </div>
+                                            {streamingThinking && (
+                                                <details className="kb-ask-thinking" open={!streamingContent}>
+                                                    <summary>💭 Thinking</summary>
+                                                    <div className="kb-ask-thinking-text">{streamingThinking}</div>
+                                                </details>
+                                            )}
                                             {streamingTools.length > 0 && (
                                                 <div className="kb-ask-tool-chips">
                                                     {streamingTools.map((tc, i) => (
@@ -305,7 +323,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                     </div>
                                 )}
 
-                                {sending && !streamingContent && streamingTools.length === 0 && (
+                                {sending && !streamingContent && !streamingThinking && streamingTools.length === 0 && (
                                     <div className="kb-ask-msg kb-ask-msg--assistant">
                                         <div className="kb-ask-msg-avatar">✨</div>
                                         <div className="kb-ask-msg-body">
