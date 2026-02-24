@@ -57,15 +57,26 @@ function resolveModel(provider, modelId, baseUrl) {
     // Try registry lookup
     const registered = getModel(provider, modelId)
     if (registered) {
-        // Override baseUrl if provided
-        return baseUrl ? { ...registered, baseUrl } : registered
+        // Guard: override api with our known-good mapping if the registry model
+        // has an api string that doesn't match our inferApi mapping
+        const expectedApi = inferApi(provider)
+        const model = { ...registered }
+        if (model.api !== expectedApi) {
+            console.warn(`⚠️  [resolveModel] registry model has api="${model.api}" but expected "${expectedApi}" for provider="${provider}". Overriding.`)
+            model.api = expectedApi
+        }
+        if (baseUrl) model.baseUrl = baseUrl
+        console.log(`🧠 [resolveModel] using registry model: provider=${provider}, id=${model.id}, api=${model.api}`)
+        return model
     }
 
     // Construct a minimal model object for unregistered models
+    const api = inferApi(provider)
+    console.log(`🧠 [resolveModel] constructing fallback model: provider=${provider}, id=${modelId}, api=${api}`)
     return {
         id: modelId,
         name: modelId,
-        api: inferApi(provider),
+        api,
         provider,
         baseUrl: baseUrl || '',
         reasoning: false,
