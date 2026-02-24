@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useKanban } from '../../store/kanbanData'
 import { apiFetch, apiStreamFetch } from '../../store/api'
 import { loadSettings } from '../../store/settings'
-import { renderMarkdown } from '../../utils/renderMarkdown'
+import { renderMarkdown } from '../../lib/markdown'
 import ToolChip from './ToolChip'
 import PromptDebug from './PromptDebug'
 import AgentQueueFeed from './AgentQueueFeed'
@@ -182,9 +182,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     const settings = loadSettings()
     const isConfigured = agentStatus?.configured || !!settings.llmApiKey
 
-    const badge = isConfigured
-        ? `🤖 ${agentStatus?.model || settings.llmModel || 'Master Agent'}`
-        : '⚠ Not configured'
+
 
     // ── Render ──
     return (
@@ -202,7 +200,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                         <div className="kb-ask-header-left">
                             <span className="kb-ask-header-icon">✨</span>
                             <span className="kb-ask-header-title">Ask</span>
-                            <span className="kb-ask-llm-badge">{badge}</span>
+
                         </div>
                         <div className="kb-ask-header-tabs">
                             <button
