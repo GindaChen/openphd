@@ -20,4 +20,4 @@ jobs:
           node --test tests/test_project.js tests/test_chat.js tests/test_agent_mailbox.js tests/test_admin_tools.js tests/test_kanban_tools.js tests/test_github_sync.js
 
       - name: Frontend build
-        run: cd frontend && npm ci && npx vite build
+        run: cd frontend && npm ci --legacy-peer-deps && npx vite build
