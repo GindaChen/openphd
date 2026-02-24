@@ -27,5 +27,5 @@ Move fast. Show something working. Checkpoint quality improvements as issues. Do
    ```bash
    cd frontend && npx vite build
    ```
-7. Create branch + commit + PR (follow `/feature-dev` steps 6-13)
+7. If not instructed by user, do not create a branch, and just work in local. If user tells you to create branch or another worktree, + commit + PR (follow `/feature-dev` steps 6-13)
 8. After merging, create GitHub issues for any deferred TODOs

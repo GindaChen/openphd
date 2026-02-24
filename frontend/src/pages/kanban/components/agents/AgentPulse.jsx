@@ -81,6 +81,10 @@ export default function AgentPulse() {
                     {fleet && (
                         <div className="agent-pulse-stats">
                             <div className="agent-pulse-stat">
+                                <span className="agent-pulse-stat-value">{fleet.agents ?? '—'}</span>
+                                <span className="agent-pulse-stat-label">Agents</span>
+                            </div>
+                            <div className="agent-pulse-stat">
                                 <span className="agent-pulse-stat-value">{fleet.running}</span>
                                 <span className="agent-pulse-stat-label">Running</span>
                             </div>

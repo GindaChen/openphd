@@ -10,7 +10,7 @@ import { getOrCreateSession, listSessions, destroySession } from '../lib/agent-s
 import {
     readInbox, readOutbox, loadRegistry, getRegistrySnapshot, getStatus as getAgentStatus,
 } from '../lib/agent-mailbox.js'
-import { listAgents as listPersistedAgents, loadAgent as loadPersistedAgent, getAgentsBase } from '../lib/agent-store.js'
+import { listAgents as listPersistedAgents, loadAgent as loadPersistedAgent, createAgent as createPersistedAgent, getAgentsBase } from '../lib/agent-store.js'
 import { generateAgentId } from '../lib/agent-id.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -292,11 +292,35 @@ export default function agentRoutes(app) {
             res.json(agent)
         })
 
+        // POST /agents/create — create a new persistent agent (auto-named)
+        app.post('/agents/create', (req, res) => {
+            try {
+                const root = req.headers['x-project-root']
+                const base = getAgentsBase(root)
+                const { type = 'workspace', workspace = null, parentId = null } = req.body || {}
+
+                const result = createPersistedAgent({
+                    type,
+                    workspace,
+                    parentId,
+                    provider: req.headers['x-llm-provider'] || 'anthropic',
+                    model: req.headers['x-llm-model'] || 'claude-sonnet-4-6',
+                }, base)
+
+                console.log(`🤖 [create] New agent: ${result.agentId} (type=${type}, workspace=${workspace})`)
+                res.status(201).json(result.config)
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
+        })
+
         // GET /agents/fleet
         app.get('/agents/fleet', (req, res) => {
             const tasks = loadAgentTasks(req)
             const memory = loadAgentMemory(req)
             const running = tasks.filter(t => t.status === 'running')
+            const root = req.headers['x-project-root']
+            const agents = listPersistedAgents(getAgentsBase(root))
             res.json({
                 total_tasks: tasks.length,
                 running: running.length,
@@ -304,6 +328,7 @@ export default function agentRoutes(app) {
                 failed: tasks.filter(t => t.status === 'failed').length,
                 pending: tasks.filter(t => t.status === 'pending').length,
                 memory_entries: memory.length,
+                agents: agents.length,
                 active_agents: running.map(t => ({ task_id: t.task_id, goal: t.goal })),
             })
         })
@@ -497,7 +522,7 @@ export default function agentRoutes(app) {
             try {
                 const session = getOrCreateSession(sessionId, { apiKey, provider, modelId, baseUrl })
 
-                send('session', { sessionId })
+                send('session', { sessionId, agentId: session.agentId })
 
                 const unsub = session.agent.subscribe(event => {
                     switch (event.type) {
