@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useKanban } from '../../store/kanbanData'
 import { apiFetch, apiStreamFetch } from '../../store/api'
+import { loadSettings } from '../../store/settings'
 import { renderMarkdown } from '../../utils/renderMarkdown'
 import ToolChip from './ToolChip'
 import PromptDebug from './PromptDebug'
@@ -142,11 +143,13 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                 await actions.clearChatHistory()
                 return
             }
-            if (agentStatus?.configured) {
+            const settings = loadSettings()
+            const isConfigured = agentStatus?.configured || !!settings.llmApiKey
+            if (isConfigured) {
                 await streamFromAgent(text)
             } else {
                 actions.addMasterChat('assistant',
-                    'Agent not configured. Set **ANTHROPIC_API_KEY** on the server and restart to enable the Master Agent.')
+                    'Agent not configured. Set your API key in **Settings** (⚙) or via the onboarding wizard to enable the Master Agent.')
             }
         } finally {
             setSending(false)
@@ -176,8 +179,11 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     // ── Helpers ──
     const formatTime = (iso) => new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 
-    const badge = agentStatus?.configured
-        ? `🤖 ${agentStatus.model || 'Master Agent'}`
+    const settings = loadSettings()
+    const isConfigured = agentStatus?.configured || !!settings.llmApiKey
+
+    const badge = isConfigured
+        ? `🤖 ${agentStatus?.model || settings.llmModel || 'Master Agent'}`
         : '⚠ Not configured'
 
     // ── Render ──
@@ -233,9 +239,9 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                         <span className="kb-ask-welcome-icon">✨</span>
                                         <p>Hi! I'm your Master Agent.</p>
                                         <p className="kb-ask-welcome-hint">
-                                            {agentStatus?.configured
+                                            {isConfigured
                                                 ? 'I can create issues, manage the board, spawn workers, and coordinate your research. Ask me anything!'
-                                                : 'Set ANTHROPIC_API_KEY on the server and restart to enable me.'}
+                                                : 'Set your API key in Settings (⚙) to enable me.'}
                                         </p>
                                     </div>
                                 )}

@@ -76,11 +76,10 @@ function KanbanInner() {
             const gs = settings.globalShortcuts || {}
             const inInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)
 
-            // ⌘J — toggle between home (chat) and kanban
+            // ⌘J — toggle Ask chat panel on the right
             if (e.key === (gs.projectChat || 'j')) {
                 e.preventDefault()
-                setActiveNav(n => n === 'home' ? 'kanban' : 'home')
-                setSelectedIssue(null)
+                setAskOpen(a => !a)
                 if (inInput) e.target.blur()
                 return
             }
@@ -381,6 +380,15 @@ function KanbanInner() {
                                         issue={selectedIssue}
                                         onClose={() => setSelectedIssue(null)}
                                         onUpdateIssue={actions.updateIssue}
+                                    />
+                                )}
+
+                                {/* Ask chat panel — right side overlay, toggled by ⌘J */}
+                                {askOpen && activeNav === 'kanban' && (
+                                    <MasterChat
+                                        isOpen={true}
+                                        onToggle={() => setAskOpen(false)}
+                                        fullScreen={false}
                                     />
                                 )}
                             </div>

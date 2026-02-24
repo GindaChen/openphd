@@ -384,11 +384,16 @@ export default function agentRoutes(app) {
 
         // GET /agents/status
         app.get('/agents/status', (req, res) => {
+            const headerKey = req.headers['x-llm-api-key']
+            const headerModel = req.headers['x-llm-model']
+            const apiKey = headerKey || ENV_LLM_API_KEY
+            const ghToken = req.headers['x-github-token'] || ENV_GITHUB_TOKEN
+            const ghRepo = req.headers['x-github-repo'] || ENV_GITHUB_REPO
             res.json({
-                configured: !!ENV_LLM_API_KEY,
-                github: !!(ENV_GITHUB_TOKEN && ENV_GITHUB_REPO),
-                model: ENV_LLM_MODEL,
-                repo: ENV_GITHUB_REPO || null,
+                configured: !!apiKey,
+                github: !!(ghToken && ghRepo),
+                model: headerModel || ENV_LLM_MODEL,
+                repo: ghRepo || null,
             })
         })
 

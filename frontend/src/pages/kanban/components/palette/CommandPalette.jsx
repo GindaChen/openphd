@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useKanban } from '../../store/kanbanData'
+import { useCommandPalette } from '../../../../contexts/CommandContext'
 
 /**
  * CommandPalette — Raycast/Spotlight-style overlay scoped to the kanban sub-app.
@@ -10,6 +11,7 @@ export default function CommandPalette({ isOpen, onClose }) {
     const [selectedIdx, setSelectedIdx] = useState(0)
     const inputRef = useRef(null)
     const { state } = useKanban()
+    const { allCommands } = useCommandPalette()
 
     useEffect(() => {
         if (isOpen) {
@@ -81,13 +83,20 @@ export default function CommandPalette({ isOpen, onClose }) {
         return items
     }, [state.issues])
 
+    // Merge local actions with global commands from CommandContext (theme toggle, etc.)
+    const allActions = useMemo(() => {
+        // Global commands already have id, icon, label, subtitle, action
+        const globalCmds = allCommands.filter(c => !actions.find(a => a.id === c.id))
+        return [...actions, ...globalCmds]
+    }, [actions, allCommands])
+
     const filtered = query.trim()
-        ? actions.filter(a => {
+        ? allActions.filter(a => {
             const q = query.toLowerCase()
             return a.label.toLowerCase().includes(q) ||
                 (a.subtitle || '').toLowerCase().includes(q)
         })
-        : actions
+        : allActions
 
     useEffect(() => { setSelectedIdx(0) }, [query])
 
