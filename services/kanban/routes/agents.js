@@ -515,31 +515,56 @@ export default function agentRoutes(app) {
             res.setHeader('X-Session-Id', sessionId)
             res.flushHeaders()
 
+            let closed = false
+            res.on('close', () => {
+                closed = true
+                console.log(`🔌 [${sessionId}] client disconnected`)
+            })
+
             const send = (eventType, data) => {
+                if (closed) return
                 res.write(`event: ${eventType}\ndata: ${JSON.stringify(data)}\n\n`)
             }
 
             try {
                 const session = getOrCreateSession(sessionId, { apiKey, provider, modelId, baseUrl })
+                const tag = `[${session.agentId || sessionId}]`
+
+                console.log(`\n🟢 ${tag} session ready (new=${!sid})`)
 
                 send('session', { sessionId, agentId: session.agentId })
 
                 const unsub = session.agent.subscribe(event => {
                     switch (event.type) {
                         case 'agent_start':
+                            console.log(`⚙️  ${tag} agent_start — processing`)
                             send('agent_start', { status: 'processing' })
                             break
                         case 'tool_execution_start':
+                            console.log(`🔧 ${tag} tool_start: ${event.toolName}(${JSON.stringify(event.args || {}).slice(0, 120)})`)
                             send('tool_start', {
                                 toolName: event.toolName,
                                 args: event.args,
                             })
                             break
                         case 'tool_execution_end':
-                            send('tool_end', {
-                                toolName: event.toolName,
-                                result: event.result?.content?.[0]?.text || '',
-                            })
+                            {
+                                const resultPreview = event.result?.content?.[0]?.text || ''
+                                console.log(`✅ ${tag} tool_end: ${event.toolName} → ${resultPreview.slice(0, 100)}${resultPreview.length > 100 ? '…' : ''}`)
+                                send('tool_end', {
+                                    toolName: event.toolName,
+                                    result: resultPreview,
+                                })
+                            }
+                            break
+                        case 'message_start':
+                            console.log(`💬 ${tag} message_start (role=${event.message?.role || '?'})`)
+                            break
+                        case 'content_delta':
+                            // streaming content — don't log each delta to avoid spam
+                            if (event.delta?.text) {
+                                send('content', { text: event.delta.text })
+                            }
                             break
                         case 'message_end':
                             if (event.message.role === 'assistant') {
@@ -547,11 +572,16 @@ export default function agentRoutes(app) {
                                     ?.filter(c => c.type === 'text')
                                     ?.map(c => c.text)
                                     ?.join('') || ''
+                                console.log(`📝 ${tag} message_end: ${text.slice(0, 150)}${text.length > 150 ? '…' : ''}`)
                                 if (text) send('message', { role: 'assistant', content: text })
                             }
                             break
                         case 'agent_end':
+                            console.log(`🏁 ${tag} agent_end — idle`)
                             send('agent_end', { status: 'idle' })
+                            break
+                        default:
+                            console.log(`❓ ${tag} unknown event: ${event.type}`, JSON.stringify(event).slice(0, 200))
                             break
                     }
                 })
@@ -570,9 +600,11 @@ export default function agentRoutes(app) {
                     toolCount: agentState.tools?.length || 0,
                 })
 
+                console.log(`🚀 ${tag} prompt("${message.slice(0, 80)}${message.length > 80 ? '…' : ''}")`)
                 await session.agent.prompt(message)
                 unsub?.()
 
+                console.log(`✔️  ${tag} prompt complete, closing stream`)
                 send('done', { sessionId })
                 res.end()
             } catch (err) {
