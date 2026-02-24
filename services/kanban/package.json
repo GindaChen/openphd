@@ -1,0 +1,14 @@
+{
+    "name": "kanban-api",
+    "version": "1.0.0",
+    "description": "Kanban board API server",
+    "type": "module",
+    "dependencies": {
+        "@mariozechner/pi-agent-core": "^0.54.2",
+        "@mariozechner/pi-ai": "^0.54.2",
+        "@sinclair/typebox": "^0.34.48",
+        "express": "^5.1.0",
+        "node-pty": "^1.0.0",
+        "ws": "^8.18.3"
+    }
+}

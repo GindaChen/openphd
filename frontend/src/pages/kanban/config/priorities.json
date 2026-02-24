@@ -1,0 +1,40 @@
+{
+    "priorities": [
+        {
+            "id": "none",
+            "color": "#9CA3AF",
+            "icon": "○",
+            "label": "None",
+            "order": 99
+        },
+        {
+            "id": "critical",
+            "color": "#EF4444",
+            "icon": "▲▲",
+            "label": "Critical",
+            "order": 0
+        },
+        {
+            "id": "high",
+            "color": "#F59E0B",
+            "icon": "▲",
+            "label": "High",
+            "order": 1
+        },
+        {
+            "id": "medium",
+            "color": "#6B7280",
+            "icon": "—",
+            "label": "Medium",
+            "order": 2
+        },
+        {
+            "id": "low",
+            "color": "#3B82F6",
+            "icon": "▼",
+            "label": "Low",
+            "order": 3
+        }
+    ],
+    "defaultPriority": "none"
+}

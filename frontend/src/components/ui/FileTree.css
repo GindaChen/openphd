@@ -1,0 +1,258 @@
+/* ─── FileTree: standalone directory browser ─── */
+
+.file-tree {
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 10px;
+    background: var(--input-bg, rgba(15, 15, 30, 0.85));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin-top: 6px;
+    overflow: hidden;
+    animation: fileTreeFadeIn 0.2s ease-out;
+}
+
+@keyframes fileTreeFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Header row: path + select ─── */
+
+.file-tree__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.file-tree__path {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 11px;
+    color: var(--text, #ccc);
+    opacity: 0.55;
+    word-break: break-all;
+    line-height: 1.4;
+    min-width: 0;
+    flex: 1;
+}
+
+.file-tree__select-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text, #eee);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.file-tree__select-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.file-tree__select-btn:active {
+    transform: translateY(0);
+}
+
+/* ─── Error ─── */
+
+.file-tree__error {
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #f87171;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ─── List container ─── */
+
+.file-tree__list {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 4px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+.file-tree__list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.file-tree__list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.file-tree__list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* ─── Individual tree item ─── */
+
+.file-tree__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    color: var(--text, #ddd);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 0;
+    position: relative;
+    transition: background 0.12s ease, color 0.12s ease;
+    animation: fileTreeItemSlide 0.18s ease-out both;
+}
+
+@keyframes fileTreeItemSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* stagger entry animation */
+.file-tree__item:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.file-tree__item:nth-child(2) {
+    animation-delay: 25ms;
+}
+
+.file-tree__item:nth-child(3) {
+    animation-delay: 50ms;
+}
+
+.file-tree__item:nth-child(4) {
+    animation-delay: 75ms;
+}
+
+.file-tree__item:nth-child(5) {
+    animation-delay: 100ms;
+}
+
+.file-tree__item:nth-child(6) {
+    animation-delay: 125ms;
+}
+
+.file-tree__item:nth-child(7) {
+    animation-delay: 150ms;
+}
+
+.file-tree__item:nth-child(8) {
+    animation-delay: 175ms;
+}
+
+.file-tree__item:nth-child(9) {
+    animation-delay: 200ms;
+}
+
+.file-tree__item:nth-child(10) {
+    animation-delay: 225ms;
+}
+
+.file-tree__item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.file-tree__item:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Tree guide lines (vertical indentation indicator) ─── */
+
+.file-tree__item::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.06) 0%,
+            rgba(255, 255, 255, 0.12) 50%,
+            rgba(255, 255, 255, 0.06) 100%);
+}
+
+.file-tree__item:first-child::before {
+    top: 50%;
+}
+
+.file-tree__item:last-child::before {
+    bottom: 50%;
+}
+
+/* ─── Item icon ─── */
+
+.file-tree__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.file-tree__item:hover .file-tree__icon {
+    transform: scale(1.1);
+}
+
+/* ─── Parent ".." item ─── */
+
+.file-tree__item--parent {
+    opacity: 0.6;
+}
+
+.file-tree__item--parent:hover {
+    opacity: 1;
+}
+
+.file-tree__item--parent .file-tree__icon {
+    transition: transform 0.2s ease;
+}
+
+.file-tree__item--parent:hover .file-tree__icon {
+    transform: translateY(-2px);
+}
+
+/* ─── Empty state ─── */
+
+.file-tree__empty {
+    padding: 16px 12px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text, #aaa);
+    opacity: 0.4;
+}
