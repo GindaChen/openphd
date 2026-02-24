@@ -36,8 +36,13 @@ export function getOrCreateSession(sessionId, config = {}) {
 
     const agentsBase = getAgentsBase(config.projectRoot)
 
-    // Resolve agent ID: reuse if provided, otherwise generate a human-readable one
-    const agentId = config.agentId || generateAgentId()
+    // Resolve agent ID: reuse config.agentId, or if sessionId matches an existing
+    // persisted agent directory, use that. Otherwise generate a human-readable one.
+    let agentId = config.agentId
+    if (!agentId && fs.existsSync(path.join(agentsBase, sessionId, 'config.json'))) {
+        agentId = sessionId  // sessionId IS an existing agentId
+    }
+    if (!agentId) agentId = generateAgentId()
     const agentDir = path.join(agentsBase, agentId)
 
     // Create persistent directory if it doesn't exist

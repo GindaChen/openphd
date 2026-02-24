@@ -34,7 +34,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     // ── Refs ──
     const chatEndRef = useRef(null)
     const inputRef = useRef(null)
-    const sessionIdRef = useRef(localStorage.getItem('agent-session-id') || null)
+    const sessionIdRef = useRef(null)
     const pendingAgentMsgRef = useRef(null)
     const lastDebugRef = useRef(null)
 
@@ -43,8 +43,23 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [state.masterChat.length, streamingContent])
 
-    // ── Check agent status on mount ──
+    // ── Resolve master agent ID on mount ──
+    // Use the persisted master agent as our session so history is shared
     useEffect(() => {
+        apiFetch('/agents/list')
+            .then(agents => {
+                const master = Array.isArray(agents) && agents.find(a => a.type === 'master')
+                if (master) {
+                    sessionIdRef.current = master.agentId
+                    localStorage.setItem('agent-session-id', master.agentId)
+                } else {
+                    // Fallback to localStorage
+                    sessionIdRef.current = localStorage.getItem('agent-session-id') || null
+                }
+            })
+            .catch(() => {
+                sessionIdRef.current = localStorage.getItem('agent-session-id') || null
+            })
         apiFetch('/agents/status').then(setAgentStatus).catch(() => setAgentStatus(null))
     }, [])
 

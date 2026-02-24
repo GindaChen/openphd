@@ -654,7 +654,7 @@ export default function agentRoutes(app) {
                 send('session', { sessionId, agentId: session.agentId })
 
                 const unsub = session.agent.subscribe(event => {
-                    console.log(`📄 ${tag} event: ${event.type}`, event);
+                    // console.log(`📄 ${tag} event: ${event.type}`, event);  // verbose — uncomment to debug
                     switch (event.type) {
                         case 'agent_start':
                             console.log(`⚙️  ${tag} agent_start — processing`)

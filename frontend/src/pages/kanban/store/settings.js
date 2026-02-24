@@ -29,6 +29,7 @@ const DEFAULTS = {
     defaultView: 'board',
     onboardingDone: false,
     kanbanColumnWidth: 280,
+    fontSize: 14,
 }
 
 export function loadSettings() {

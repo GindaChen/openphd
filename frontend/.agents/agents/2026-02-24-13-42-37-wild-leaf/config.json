@@ -1,11 +1,11 @@
 {
-  "agentId": "2026-02-24-12-20-02-deep-glow",
+  "agentId": "2026-02-24-13-42-37-wild-leaf",
   "type": "master",
-  "displayName": "deep-glow",
+  "displayName": "wild-leaf",
   "soul": null,
   "provider": "deepinfra",
   "model": "moonshotai/Kimi-K2.5",
   "workspace": null,
   "parentId": null,
-  "createdAt": "2026-02-24T20:20:02.832Z"
+  "createdAt": "2026-02-24T21:42:37.057Z"
 }

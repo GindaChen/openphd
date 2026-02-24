@@ -320,7 +320,26 @@ export default function SettingsPanel({ isOpen, onClose, onSettingsChange }) {
 
                     {activeTab === 'appearance' && (
                         <div className="kb-settings-section">
-                            <h3>🎨 Board Layout</h3>
+                            <h3>🔤 Typography</h3>
+                            <label className="kb-settings-label">
+                                Font Size: {settings.fontSize || 14}px
+                                <input
+                                    type="range"
+                                    min="8"
+                                    max="32"
+                                    step="1"
+                                    value={settings.fontSize || 14}
+                                    onChange={e => update('fontSize', parseInt(e.target.value))}
+                                    style={{ width: '100%', marginTop: '6px' }}
+                                />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-tertiary)' }}>
+                                    <span>8px (compact)</span>
+                                    <span>14px (default)</span>
+                                    <span>32px (large)</span>
+                                </div>
+                            </label>
+
+                            <h3 style={{ marginTop: '20px' }}>🎨 Board Layout</h3>
                             <label className="kb-settings-label">
                                 Kanban Column Width: {settings.kanbanColumnWidth || 280}px
                                 <input
