@@ -5656,6 +5656,37 @@
     box-shadow: none;
 }
 
+/* ── Ask panel in kanban view (⌘J) ── */
+.kb-ask-kanban-panel {
+    flex: 0 0 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--kb-border);
+    background: var(--kb-bg);
+    overflow: hidden;
+}
+
+.kb-ask-kanban-panel .kb-ask-panel {
+    width: 100% !important;
+    height: 100%;
+    border: none;
+}
+
+.kb-ask-resize-handle {
+    flex: 0 0 4px;
+    cursor: col-resize;
+    background: transparent;
+    transition: background 0.15s;
+    position: relative;
+    z-index: 2;
+}
+
+.kb-ask-resize-handle:hover,
+.kb-ask-resize-handle:active {
+    background: var(--kb-accent);
+}
+
 /* ========================================
    Onboarding Wizard
    ======================================== */
@@ -5772,8 +5803,15 @@
 }
 
 @keyframes onboardStepIn {
-    from { opacity: 0; transform: translateX(16px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .onboarding-hero-icon {
@@ -5784,9 +5822,19 @@
 }
 
 @keyframes onboardBounce {
-    0% { transform: scale(0.5); opacity: 0; }
-    60% { transform: scale(1.15); }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .onboarding-title {
@@ -5816,7 +5864,7 @@
     margin: 0 0 20px;
 }
 
-.onboarding-step-title + .onboarding-subtitle {
+.onboarding-step-title+.onboarding-subtitle {
     text-align: left;
 }
 
@@ -6164,8 +6212,17 @@ select.onboarding-input {
 }
 
 @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 0 0 var(--pulse-color); opacity: 1; }
-    50% { box-shadow: 0 0 6px 3px var(--pulse-color); opacity: 0.8; }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 var(--pulse-color);
+        opacity: 1;
+    }
+
+    50% {
+        box-shadow: 0 0 6px 3px var(--pulse-color);
+        opacity: 0.8;
+    }
 }
 
 .agent-pulse-label {
@@ -6193,8 +6250,15 @@ select.onboarding-input {
 }
 
 @keyframes agentPanelIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .agent-pulse-panel-header {

@@ -7,6 +7,12 @@ export default defineConfig({
     plugins: [react()],
     server: {
         proxy: {
+            // Agent routes register at /agents/* (no /kanban prefix) — must come BEFORE the general rule
+            '/api/kanban/agents': {
+                target: `http://localhost:${API_PORT}`,
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/kanban\/agents/, '/agents'),
+            },
             '/api/kanban': {
                 target: `http://localhost:${API_PORT}`,
                 changeOrigin: true,

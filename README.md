@@ -1,57 +1,121 @@
-# OpenPhD
+<div align="center">
 
-AI-native research management — a Kanban board with agent-powered orchestration.
+# 🎓 OpenPhD
 
-## Quick Start
+**AI-native research management — a Kanban board with agent-powered orchestration.**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%E2%89%A518-brightgreen)](https://nodejs.org)
+
+</div>
+
+---
+
+## ⚡ One-Line Install
 
 ```bash
-# Backend
-cd services/kanban && npm install
-
-# Frontend
-cd frontend && npm install
-
-# Run both (from frontend/)
-npm run dev
-# → http://localhost:5173
+curl -fsSL https://raw.githubusercontent.com/GindaChen/openphd/main/install.sh | bash
 ```
 
-## Agent Features
+That's it. This clones the repo, installs dependencies, and prints instructions to start.
 
-Set `ANTHROPIC_API_KEY` to enable the Master Agent:
+> **Already cloned?** Run it manually:
+> ```bash
+> cd frontend && npm install && cd ../services/kanban && npm install
+> cd ../../frontend && npm run dev
+> ```
+
+---
+
+## 🚀 What is OpenPhD?
+
+OpenPhD is a research management tool built for PhD students and researchers. It combines a **Kanban board** for tracking research tasks with an **AI agent** that can create issues, plan work, and sync with GitHub — all from a single chat interface.
+
+### ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 📋 **Kanban Board** | Drag-and-drop issue tracking with labels, priorities, and multiple columns |
+| 🤖 **AI Agent** | Natural language task creation, planning, and issue management |
+| 🔗 **GitHub Sync** | Bidirectional sync — issues flow between your board and GitHub |
+| ⌨️ **Command Palette** | `Cmd+K` for instant access to any action |
+| 💬 **Chat Panel** | `Cmd+J` to ask the agent questions inline |
+| 🌙 **Dark Mode** | Easy on the eyes during late-night research |
+
+---
+
+## 🏃 Quick Start
+
+### 1. Start the app
+
+```bash
+cd openphd/frontend
+npm run dev
+```
+
+Open **http://localhost:5173** — you're ready to go.
+
+### 2. Enable the AI Agent *(optional)*
 
 ```bash
 ANTHROPIC_API_KEY=sk-ant-... npm run dev
 ```
 
-The agent can:
-- Create and manage issues via natural language
-- Spawn worker agents for complex tasks
-- Sync issues with GitHub
+Or configure it from the **Settings** panel in the UI.
 
-## GitHub Sync
-
-Set `GITHUB_TOKEN` and `GITHUB_REPO` to enable bidirectional issue sync:
+### 3. Enable GitHub Sync *(optional)*
 
 ```bash
 GITHUB_TOKEN=ghp_... GITHUB_REPO=owner/repo npm run dev
 ```
 
-## Architecture
+Or configure it from the **Settings** panel in the UI.
+
+---
+
+## 🏗 Architecture
 
 ```
-frontend/           React + Vite SPA
-  └── src/pages/kanban/   Kanban board UI
-services/kanban/    Express API server
-  ├── lib/          Agent engine, tools, souls
-  ├── routes/       REST + SSE endpoints
-  └── tests/        61 tests
-.agent/             Agent-friendly engineering docs
+openphd/
+├── frontend/             React + Vite SPA
+│   └── src/pages/kanban/   Kanban board UI, command palette, chat
+├── services/kanban/      Express API server
+│   ├── lib/              Agent engine, tools, souls
+│   ├── routes/           REST + SSE endpoints
+│   └── tests/            Test suite
+└── .agent/               Agent workflows & memory
 ```
 
-## Testing
+| Layer | Stack |
+|-------|-------|
+| Frontend | React 19, Vite 7 |
+| Backend | Express 5, Node.js |
+| AI | Anthropic Claude (via pi-agent-core) |
+| Data | File-based JSON (zero-config) |
+
+---
+
+## 🧪 Testing
 
 ```bash
-cd services/kanban && node --test tests/*.js    # 61 tests
-cd frontend && npx vite build                    # build check
+# Backend tests
+cd services/kanban && node --test tests/*.js
+
+# Frontend lint + build
+cd frontend && npm run lint && npm run build
 ```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feat/my-feature`)
+3. Commit changes (`git commit -m 'Add my feature'`)
+4. Push and open a PR
+
+---
+
+## 📄 License
+
+MIT © [GindaChen](https://github.com/GindaChen)

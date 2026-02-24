@@ -65,6 +65,14 @@ function KanbanInner() {
     const { isOpen: paletteOpen, close: closePalette } = useCommandPalette()
     const handleCloseDetail = useCallback(() => setSelectedIssue(null), [])
 
+    // Resizable Ask panel (left-edge drag = default direction)
+    const { width: askWidth, handleMouseDown: askResizeDown } = useResizable({
+        initialWidth: 400,
+        minWidth: 300,
+        maxWidth: 700,
+        storageKey: 'kb-ask-panel-width',
+    })
+
     useKeyboard({ selectedIssue, onCloseDetail: handleCloseDetail })
 
     // ⌘J — project chat (configurable via Settings). ⌘K is now global (CommandContext).
@@ -383,13 +391,18 @@ function KanbanInner() {
                                     />
                                 )}
 
-                                {/* Ask chat panel — right side overlay, toggled by ⌘J */}
+                                {/* Ask chat panel — right side, resizable, toggled by ⌘J */}
                                 {askOpen && activeNav === 'kanban' && (
-                                    <MasterChat
-                                        isOpen={true}
-                                        onToggle={() => setAskOpen(false)}
-                                        fullScreen={false}
-                                    />
+                                    <>
+                                        <div className="kb-ask-resize-handle" onMouseDown={askResizeDown} />
+                                        <div className="kb-ask-kanban-panel" style={{ width: askWidth }}>
+                                            <MasterChat
+                                                isOpen={true}
+                                                onToggle={() => setAskOpen(false)}
+                                                fullScreen={false}
+                                            />
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>

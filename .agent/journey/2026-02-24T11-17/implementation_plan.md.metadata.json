@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary":  "Plan for creating a YOLO one-liner install script and rewriting the README as a landing page for the openphd project. Includes creating install.sh and updating README.md.",
+  "updatedAt":  "2026-02-24T19:17:02.226621Z"
+}
