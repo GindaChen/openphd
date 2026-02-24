@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import CreateProjectDialog from './CreateProjectDialog'
+import AgentPulse from '../agents/AgentPulse'
 
 export default function ProjectSidebar({ currentProject, onSelectProject, activeNav, onNavChange }) {
     const [projects, setProjects] = useState([
@@ -105,6 +106,7 @@ export default function ProjectSidebar({ currentProject, onSelectProject, active
 
             {/* ── Bottom ── */}
             <div className="kb-sidebar-bottom">
+                <AgentPulse />
                 <a href="/" className="kb-sidebar-nav-item kb-sidebar-nav-item--subtle" data-tooltip="Back to app">
                     <span className="kb-sidebar-nav-icon">↩</span>
                 </a>

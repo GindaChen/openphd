@@ -12,6 +12,7 @@ import ProjectSidebar from './components/sidebar/ProjectSidebar'
 import SettingsPanel from './components/settings/SettingsPanel'
 import SyncDialog from './components/settings/SyncDialog'
 import CreateIssueDialog from './components/palette/CreateIssueDialog'
+import OnboardingWizard from './components/onboarding/OnboardingWizard'
 import { useKeyboard } from './hooks/useKeyboard'
 import { useResizable } from './hooks/useResizable'
 import { useRegisterCommands } from '../../contexts/CommandContext'
@@ -53,7 +54,8 @@ function KanbanInner() {
     })
     const [activeNav, setActiveNav] = useState('kanban')
 
-    const [settingsOpen, setSettingsOpen] = useState(() => !loadSettings().onboardingDone)
+    const [settingsOpen, setSettingsOpen] = useState(false)
+    const [showOnboarding, setShowOnboarding] = useState(() => !loadSettings().onboardingDone)
     const [syncStatus, setSyncStatus] = useState(null)
     const [syncing, setSyncing] = useState(false)
     const [syncDialog, setSyncDialog] = useState({ open: false, direction: null })
@@ -385,9 +387,18 @@ function KanbanInner() {
                 )}
             </div>
 
+            {showOnboarding && (
+                <OnboardingWizard
+                    onComplete={(s) => {
+                        setShowOnboarding(false)
+                        handleSettingsChange(s)
+                    }}
+                />
+            )}
+
             <SettingsPanel
                 isOpen={settingsOpen}
-                onClose={() => { setSettingsOpen(false); setSetting('onboardingDone', true) }}
+                onClose={() => setSettingsOpen(false)}
                 onSettingsChange={handleSettingsChange}
             />
 

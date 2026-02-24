@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { apiFetch } from '../../store/api'
+import MemoryPanel from '../agents/MemoryPanel'
 
 /**
  * ContextDashboard — Dynamic, AI-curated project dashboard.
@@ -574,6 +575,8 @@ export default function ContextDashboard() {
                     />
                 ))}
             </div>
+
+            <MemoryPanel />
         </div>
     )
 }
