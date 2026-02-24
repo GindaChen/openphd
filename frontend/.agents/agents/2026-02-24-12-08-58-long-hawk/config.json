@@ -1,0 +1,11 @@
+{
+  "agentId": "2026-02-24-12-08-58-long-hawk",
+  "type": "master",
+  "displayName": "long-hawk",
+  "soul": null,
+  "provider": "deepinfra",
+  "model": "moonshotai/Kimi-K2.5",
+  "workspace": null,
+  "parentId": null,
+  "createdAt": "2026-02-24T20:08:58.391Z"
+}

@@ -581,29 +581,61 @@ export default function agentRoutes(app) {
                         case 'message_start':
                             console.log(`💬 ${tag} message_start (role=${event.message?.role || '?'})`)
                             break
-                        case 'content_delta':
-                            // streaming content — don't log each delta to avoid spam
-                            if (event.delta?.text) {
-                                send('content', { text: event.delta.text })
+                        case 'message_update':
+                            {
+                                // pi-mono wraps streaming content in assistantMessageEvent
+                                const ame = event.assistantMessageEvent
+                                if (!ame) break
+                                switch (ame.type) {
+                                    case 'thinking_start':
+                                        console.log(`🧠 ${tag} thinking...`)
+                                        send('thinking_start', {})
+                                        break
+                                    case 'thinking_delta':
+                                        // don't log each delta — too noisy
+                                        break
+                                    case 'thinking_end':
+                                        console.log(`🧠 ${tag} thinking complete`)
+                                        send('thinking_end', {})
+                                        break
+                                    case 'text_start':
+                                        break
+                                    case 'text_delta':
+                                        if (ame.delta) {
+                                            lastAssistantText += ame.delta
+                                            send('content', { text: ame.delta })
+                                        }
+                                        break
+                                    case 'text_end':
+                                        console.log(`📝 ${tag} text_end: ${lastAssistantText.slice(0, 120)}${lastAssistantText.length > 120 ? '…' : ''}`)
+                                        break
+                                }
                             }
                             break
                         case 'message_end':
-                            if (event.message.role === 'assistant') {
+                            if (event.message?.role === 'assistant') {
                                 const text = event.message.content
                                     ?.filter(c => c.type === 'text')
                                     ?.map(c => c.text)
                                     ?.join('') || ''
-                                lastAssistantText = text
-                                console.log(`📝 ${tag} message_end: ${text.slice(0, 150)}${text.length > 150 ? '…' : ''}`)
+                                if (text) lastAssistantText = text
+                                console.log(`📨 ${tag} message_end (${text.length} chars)`)
+                                // Send full message as final — frontend uses this to finalize
                                 if (text) send('message', { role: 'assistant', content: text })
                             }
+                            break
+                        case 'turn_start':
+                            console.log(`🔄 ${tag} turn_start`)
+                            break
+                        case 'turn_end':
+                            console.log(`🔄 ${tag} turn_end`)
                             break
                         case 'agent_end':
                             console.log(`🏁 ${tag} agent_end — idle`)
                             send('agent_end', { status: 'idle' })
                             break
                         default:
-                            console.log(`❓ ${tag} unknown event: ${event.type}`, JSON.stringify(event).slice(0, 200))
+                            console.log(`❓ ${tag} unknown event: ${event.type}`)
                             break
                     }
                 })

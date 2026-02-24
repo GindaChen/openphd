@@ -91,6 +91,19 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                 case 'prompt_debug':
                                     lastDebugRef.current = data
                                     break
+                                case 'thinking_start':
+                                    setStreamingContent(prev => prev + '\n\n*thinking…*\n\n')
+                                    break
+                                case 'thinking_end':
+                                    // Clear thinking indicator — real text follows
+                                    break
+                                case 'content':
+                                    // Streaming text delta from agent
+                                    if (data.text) {
+                                        fullContent += data.text
+                                        setStreamingContent(fullContent)
+                                    }
+                                    break
                                 case 'tool_start':
                                     toolResults.push({ tool: data.toolName, args: data.args, result: null })
                                     setStreamingTools([...toolResults])
@@ -102,7 +115,8 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                                     break
                                 }
                                 case 'message':
-                                    fullContent = data.content || ''
+                                    // Final complete message — overwrite any streamed content
+                                    fullContent = data.content || fullContent
                                     setStreamingContent(fullContent)
                                     break
                                 case 'error':
