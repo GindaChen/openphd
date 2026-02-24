@@ -4,6 +4,7 @@ import path from 'path'
 import crypto from 'crypto'
 import { fileURLToPath } from 'url'
 import { readJSON, writeJSON } from '../lib/helpers.js'
+import { getDataDir, ensureBootstrapped } from '../lib/project.js'
 import { ghFetch, ENV_GITHUB_TOKEN, ENV_GITHUB_REPO } from './github-sync.js'
 import { ENV_LLM_BASE_URL, ENV_LLM_API_KEY, ENV_LLM_MODEL } from './chat.js'
 import { getOrCreateSession, listSessions, destroySession } from '../lib/agent-sessions.js'
@@ -516,9 +517,29 @@ export default function agentRoutes(app) {
             res.flushHeaders()
 
             let closed = false
+            let lastAssistantText = ''
+            let userMessage = message
             res.on('close', () => {
                 closed = true
                 console.log(`🔌 [${sessionId}] client disconnected`)
+                // Save partial response to chat history so it's visible after refresh
+                if (lastAssistantText) {
+                    const historyPath = getDataDir(req)
+                    if (historyPath) {
+                        try {
+                            const histFile = path.join(historyPath, 'chat-history.json')
+                            let history = []
+                            try { history = JSON.parse(fs.readFileSync(histFile, 'utf-8')) } catch { }
+                            history.push({ role: 'user', content: userMessage, timestamp: new Date().toISOString() })
+                            history.push({ role: 'assistant', content: lastAssistantText, timestamp: new Date().toISOString() })
+                            if (history.length > 200) history.splice(0, history.length - 200)
+                            fs.writeFileSync(histFile, JSON.stringify(history, null, 2))
+                            console.log(`💾 [${sessionId}] saved partial response to chat history`)
+                        } catch (e) {
+                            console.error(`⚠️  [${sessionId}] failed to save partial response:`, e.message)
+                        }
+                    }
+                }
             })
 
             const send = (eventType, data) => {
@@ -572,6 +593,7 @@ export default function agentRoutes(app) {
                                     ?.filter(c => c.type === 'text')
                                     ?.map(c => c.text)
                                     ?.join('') || ''
+                                lastAssistantText = text
                                 console.log(`📝 ${tag} message_end: ${text.slice(0, 150)}${text.length > 150 ? '…' : ''}`)
                                 if (text) send('message', { role: 'assistant', content: text })
                             }

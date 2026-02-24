@@ -1,0 +1,11 @@
+{
+  "agents": {
+    "worker-1771963148413-oime": {
+      "task": "Connect to GitHub API and pull all open issues from the repository. For each issue, extract: issue number, title, description, labels, assignees, state, and any related items. Then report back with a structured list (JSON or markdown) of all issues found so the Master Agent can create kanban issues.",
+      "type": "code",
+      "status": "running",
+      "agentId": "worker-1771963148413-oime",
+      "registeredAt": 1771963148416
+    }
+  }
+}

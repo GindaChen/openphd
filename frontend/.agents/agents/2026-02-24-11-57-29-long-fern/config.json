@@ -1,0 +1,11 @@
+{
+  "agentId": "2026-02-24-11-57-29-long-fern",
+  "type": "master",
+  "displayName": "long-fern",
+  "soul": null,
+  "provider": "deepinfra",
+  "model": "moonshotai/Kimi-K2.5",
+  "workspace": null,
+  "parentId": null,
+  "createdAt": "2026-02-24T19:57:29.008Z"
+}

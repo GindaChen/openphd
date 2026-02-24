@@ -31,7 +31,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
     // ── Refs ──
     const chatEndRef = useRef(null)
     const inputRef = useRef(null)
-    const sessionIdRef = useRef(null)
+    const sessionIdRef = useRef(localStorage.getItem('agent-session-id') || null)
     const pendingAgentMsgRef = useRef(null)
     const lastDebugRef = useRef(null)
 
@@ -86,6 +86,7 @@ export default function MasterChat({ isOpen, onToggle, fullScreen }) {
                             switch (eventType) {
                                 case 'session':
                                     sessionIdRef.current = data.sessionId
+                                    try { localStorage.setItem('agent-session-id', data.sessionId) } catch { }
                                     break
                                 case 'prompt_debug':
                                     lastDebugRef.current = data
