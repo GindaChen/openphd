@@ -26,6 +26,7 @@ export default [
             // These are aspirational best-practices, not crash-causing bugs
             'react-hooks/set-state-in-effect': 'off',
             'react-hooks/refs': 'off',
+            'react-hooks/purity': 'off',
 
             // Catch undefined variables and missing imports (would've caught useNavigate crash)
             'no-undef': 'error',
