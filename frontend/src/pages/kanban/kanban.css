@@ -6734,3 +6734,152 @@ select.onboarding-input {
     color: var(--text-tertiary, #666);
     flex-shrink: 0;
 }
+
+/* ========================================
+   Agent List View
+   ======================================== */
+
+.kb-agents-view {
+    padding: 24px 32px;
+    max-width: 800px;
+}
+
+.kb-agents-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.kb-agents-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    margin: 0;
+}
+
+.kb-agents-refresh {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border, #333);
+    background: transparent;
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.kb-agents-refresh:hover {
+    background: var(--bg-hover, #222);
+    color: var(--text-primary, #fff);
+    border-color: var(--text-tertiary, #666);
+}
+
+.kb-agents-loading,
+.kb-agents-error {
+    font-size: 13px;
+    color: var(--text-tertiary, #666);
+    padding: 20px 0;
+}
+
+.kb-agents-error {
+    color: #f87171;
+}
+
+.kb-agents-empty {
+    text-align: center;
+    padding: 48px 16px;
+    color: var(--text-tertiary, #666);
+}
+
+.kb-agents-empty p {
+    margin: 0 0 6px;
+    font-size: 14px;
+}
+
+.kb-agents-empty-hint {
+    font-size: 12px;
+    color: var(--text-tertiary, #555);
+}
+
+.kb-agents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kb-agents-card {
+    padding: 14px 16px;
+    background: var(--bg-card, #1a1a2e);
+    border: 1px solid var(--border, #333);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.kb-agents-card:hover {
+    border-color: var(--text-tertiary, #555);
+    transform: translateX(2px);
+}
+
+.kb-agents-card--running {
+    border-left: 3px solid var(--color-warning, #fbbf24);
+}
+
+.kb-agents-card--created {
+    border-left: 3px solid var(--accent, #667eea);
+}
+
+.kb-agents-card--stopped {
+    border-left: 3px solid var(--text-tertiary, #666);
+}
+
+.kb-agents-card--error {
+    border-left: 3px solid var(--color-danger, #f87171);
+}
+
+.kb-agents-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.kb-agents-card-status {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.kb-agents-card-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.kb-agents-card-type {
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent, #667eea) 12%, var(--bg, #111));
+    color: var(--text-tertiary, #888);
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.kb-agents-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-tertiary, #666);
+    padding-left: 22px;
+}
+
+.kb-agents-card-model {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+}

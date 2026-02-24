@@ -1,11 +1,11 @@
 // ── Agent Session Manager ──
 // Manages long-lived pi-mono Agent instances keyed by session ID.
-// Each session gets its own mailbox directory and agent instance.
+// Each session persists to .agents/agents/<id>/ via agent-store.
 
 import path from 'path'
 import fs from 'fs'
-import os from 'os'
 import { createProjectMasterAgent } from './agent-engine.js'
+import { createAgent as createAgentDir, updateAgentStatus, getAgentsBase } from './agent-store.js'
 
 const SESSION_TTL_MS = 30 * 60 * 1000 // 30 min inactivity
 
@@ -14,7 +14,7 @@ const sessions = new Map()
 /**
  * Get or create an agent session.
  * @param {string} sessionId
- * @param {object} config - { provider, modelId, apiKey, systemPrompt }
+ * @param {object} config - { provider, modelId, apiKey, systemPrompt, projectRoot }
  * @returns {{ agent, mailboxBase, sessionId }}
  */
 export function getOrCreateSession(sessionId, config = {}) {
@@ -30,8 +30,22 @@ export function getOrCreateSession(sessionId, config = {}) {
         }
     }
 
-    const mailboxBase = path.join(os.tmpdir(), 'agent-sessions', sessionId)
-    fs.mkdirSync(mailboxBase, { recursive: true })
+    // Persist agent directory under .agents/agents/<sessionId>/
+    const agentsBase = getAgentsBase(config.projectRoot)
+    const agentDir = path.join(agentsBase, sessionId)
+
+    // Create persistent directory if it doesn't exist
+    if (!fs.existsSync(path.join(agentDir, 'config.json'))) {
+        createAgentDir({
+            agentId: sessionId,
+            type: config.type || 'master',
+            provider: config.provider || 'anthropic',
+            model: config.modelId || 'claude-sonnet-4-6',
+        }, agentsBase)
+    }
+
+    // Use the agent directory as the mailbox base
+    const mailboxBase = agentsBase
 
     const agent = createProjectMasterAgent({
         ...config,
@@ -42,12 +56,17 @@ export function getOrCreateSession(sessionId, config = {}) {
         sessionId,
         agent,
         mailboxBase,
+        agentDir,
         _configKey: `${config.provider || ''}:${config.modelId || ''}:${config.apiKey || ''}`,
         createdAt: Date.now(),
         lastAccess: Date.now(),
     }
 
     sessions.set(sessionId, session)
+
+    // Update status to running
+    updateAgentStatus(sessionId, { status: 'running' }, agentsBase)
+
     return session
 }
 
@@ -64,12 +83,19 @@ export function listSessions() {
 }
 
 /**
- * Destroy a session and clean up.
+ * Destroy a session and clean up the in-memory state.
+ * Note: persistent directory is NOT deleted (preserved for memory/history).
  */
 export function destroySession(sessionId) {
     const session = sessions.get(sessionId)
     if (!session) return false
-    try { fs.rmSync(session.mailboxBase, { recursive: true, force: true }) } catch { }
+
+    // Update status to stopped but don't delete the directory
+    try {
+        const agentsBase = path.dirname(session.agentDir)
+        updateAgentStatus(sessionId, { status: 'stopped' }, agentsBase)
+    } catch { }
+
     sessions.delete(sessionId)
     return true
 }

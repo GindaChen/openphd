@@ -10,6 +10,8 @@ import { getOrCreateSession, listSessions, destroySession } from '../lib/agent-s
 import {
     readInbox, readOutbox, loadRegistry, getRegistrySnapshot, getStatus as getAgentStatus,
 } from '../lib/agent-mailbox.js'
+import { listAgents as listPersistedAgents, loadAgent as loadPersistedAgent, getAgentsBase } from '../lib/agent-store.js'
+import { generateAgentId } from '../lib/agent-id.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -273,6 +275,23 @@ export default function agentRoutes(app) {
     } else {
         // ── Local agent API implementation ──
 
+        // GET /agents/list — list all persisted agents
+        app.get('/agents/list', (req, res) => {
+            const root = req.headers['x-project-root']
+            const base = getAgentsBase(root)
+            const agents = listPersistedAgents(base)
+            res.json(agents)
+        })
+
+        // GET /agents/detail/:id — single agent detail
+        app.get('/agents/detail/:id', (req, res) => {
+            const root = req.headers['x-project-root']
+            const base = getAgentsBase(root)
+            const agent = loadPersistedAgent(req.params.id, base)
+            if (!agent) return res.status(404).json({ error: 'Agent not found' })
+            res.json(agent)
+        })
+
         // GET /agents/fleet
         app.get('/agents/fleet', (req, res) => {
             const tasks = loadAgentTasks(req)
@@ -418,7 +437,7 @@ export default function agentRoutes(app) {
             }
 
             try {
-                const sessionId = sid || crypto.randomUUID()
+                const sessionId = sid || generateAgentId()
                 const session = getOrCreateSession(sessionId, { apiKey })
 
                 // Collect response text
@@ -462,7 +481,7 @@ export default function agentRoutes(app) {
 
             if (!apiKey) return res.status(400).json({ error: 'No API key configured. Set your API key in Settings.' })
 
-            const sessionId = sid || crypto.randomUUID()
+            const sessionId = sid || generateAgentId()
 
             // SSE headers
             res.setHeader('Content-Type', 'text/event-stream')
